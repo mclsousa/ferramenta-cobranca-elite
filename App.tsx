@@ -4,9 +4,9 @@ import {
   Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users,
   CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList,
   History, Play, X, ChevronLeft, ChevronRight, CheckCircle, Clock, Link as LinkIcon, Copy, MessageSquare, ExternalLink,
-  Clipboard, Rocket, Upload, AlertOctagon, Menu
+  Clipboard, Rocket, Upload, AlertOctagon, Menu, Database, DollarSign, Bell
 } from 'lucide-react';
-import { ParsedClient, AppConfig, ViewMode, ResultViewMode, ToastMessage, DateRange, ActionLog } from './types';
+import { ParsedClient, AppConfig, ViewMode, ResultViewMode, ToastMessage, DateRange, ActionLog, PaymentRecord, StoredClient, Reminder } from './types';
 import { DEFAULT_CONFIG } from './constants';
 import { parseClientData, detectInputType, normalizeCsvIfNeeded } from './utils/parser';
 import { extractPhone, extractPhoneValidated, generateCSV, formatDateShort, toInputDate, formatCurrency, padZero, formatDate } from './utils/helpers';
@@ -16,6 +16,9 @@ import ConfigModal from './components/ConfigModal';
 import EditClientModal from './components/EditClientModal';
 import ReceiptModal from './components/ReceiptModal';
 import LinkClientsModal from './components/LinkClientsModal';
+import PaymentModal from './components/PaymentModal';
+import ReminderModal from './components/ReminderModal';
+import DatabaseModal from './components/DatabaseModal';
 import { HistorySidebar, LinksSidebar } from './components/Sidebars';
 
 function App() {
@@ -168,6 +171,38 @@ function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isLinksOpen, setIsLinksOpen] = useState(false);
 
+  // --- Feature: Pagamentos ---
+  const [payments, setPayments] = useState<PaymentRecord[]>(() => {
+    try {
+      const saved = localStorage.getItem('paymentsLog');
+      if (!saved) return [];
+      const parsed: PaymentRecord[] = JSON.parse(saved);
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+      return parsed.filter(p => Date.now() - p.paidAt < thirtyDays);
+    } catch { return []; }
+  });
+  const [payingClient, setPayingClient] = useState<ParsedClient | null>(null);
+
+  // --- Feature: Banco de Clientes ---
+  const [clientDatabase, setClientDatabase] = useState<StoredClient[]>(() => {
+    try {
+      const saved = localStorage.getItem('clientDatabase');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+  const [isDatabaseOpen, setIsDatabaseOpen] = useState(false);
+
+  // --- Feature: Lembretes ---
+  const [reminders, setReminders] = useState<Reminder[]>(() => {
+    try {
+      const saved = localStorage.getItem('reminders');
+      if (!saved) return [];
+      const parsed: Reminder[] = JSON.parse(saved);
+      return parsed.filter(r => !r.fired || Date.now() - r.scheduledFor < 24 * 60 * 60 * 1000);
+    } catch { return []; }
+  });
+  const [reminderClient, setReminderClient] = useState<ParsedClient | null>(null);
+
   // --- Filter Inputs ---
   const [unifiedDates, setUnifiedDates] = useState<DateRange>(() => ({
     start: localStorage.getItem('unifiedStart') || '',
@@ -248,6 +283,40 @@ function App() {
   useEffect(() => {
     localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
   }, [actionHistory]);
+
+  useEffect(() => {
+    localStorage.setItem('paymentsLog', JSON.stringify(payments));
+  }, [payments]);
+
+  useEffect(() => {
+    localStorage.setItem('clientDatabase', JSON.stringify(clientDatabase));
+  }, [clientDatabase]);
+
+  useEffect(() => {
+    localStorage.setItem('reminders', JSON.stringify(reminders));
+  }, [reminders]);
+
+  // Dispara lembretes pendentes ao carregar e agenda os futuros da sessão
+  useEffect(() => {
+    const now = Date.now();
+    const pending = reminders.filter(r => !r.fired);
+    pending.forEach(r => {
+      const delay = r.scheduledFor - now;
+      if (delay <= 0) {
+        addToast(`⏰ Lembrete: ${r.clientName}`, 'warning');
+        setReminders(prev => prev.map(x => x.id === r.id ? { ...x, fired: true } : x));
+      } else if (delay < 24 * 60 * 60 * 1000) {
+        setTimeout(() => {
+          addToast(`⏰ Lembrete: ${r.clientName}`, 'warning');
+          if (Notification.permission === 'granted') {
+            new Notification('Cobrança Elite', { body: `Hora de cobrar: ${r.clientName}`, icon: '/favicon.ico' });
+          }
+          setReminders(prev => prev.map(x => x.id === r.id ? { ...x, fired: true } : x));
+        }, delay);
+      }
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // --- Helpers ---
   const addToast = (text: string, type: ToastMessage['type'] = 'info') => {
@@ -378,6 +447,7 @@ function App() {
 
     setFlatResults(preparedClients);
     setResults(groupedClients);
+    saveToDatabase(preparedClients);
     setIsExpiredMode(isVencidoFilter);
     const typeLabel = isLikelyP2P ? 'P2P' : 'IPTV';
     const modeLabel = isVencidoFilter ? 'Vencidos' : typeLabel;
@@ -599,9 +669,16 @@ function App() {
         if (d.getTime() === today.getTime()) expiringToday++;
     });
 
-    const potentialRevenue = totalAccounts * (config.plans?.[0]?.price || 35); // Approx revenue using first plan
+    const potentialRevenue = totalAccounts * (config.plans?.[0]?.price || 35);
     return { total: totalCards, expired, today: expiringToday, potentialRevenue };
   }, [results, searchQuery, config.plans]);
+
+  const todayRevenue = useMemo(() => {
+    const todayStr = new Date().toDateString();
+    return payments
+      .filter(p => new Date(p.paidAt).toDateString() === todayStr)
+      .reduce((sum, p) => sum + p.amount, 0);
+  }, [payments]);
 
   // --- Focus Mode Logic ---
   const startFocusMode = (enableQueue = false) => {
@@ -648,6 +725,86 @@ function App() {
 
   const handleFocusPrev = () => {
     if (focusIndex > 0) setFocusIndex(prev => prev - 1);
+  };
+
+  // --- Handlers: Pagamentos ---
+  const handleMarkAsPaid = (client: ParsedClient, amount: number) => {
+    const record: PaymentRecord = {
+      id: crypto.randomUUID(),
+      clientId: client.id,
+      clientName: client.name,
+      amount,
+      paidAt: Date.now(),
+    };
+    setPayments(prev => [...prev, record]);
+    addToast(`💰 ${client.name} — R$ ${amount.toFixed(2)} registrado`, 'success');
+  };
+
+  // --- Handlers: Banco de Clientes ---
+  const saveToDatabase = (parsed: ParsedClient[]) => {
+    setClientDatabase(prev => {
+      const existingNames = new Set(prev.map(c => c.name.toLowerCase()));
+      const newEntries: StoredClient[] = parsed
+        .filter(c => !existingNames.has(c.name.toLowerCase()))
+        .map(c => ({
+          id: crypto.randomUUID(),
+          name: c.name,
+          rawNotes: c.rawNotes,
+          type: c.type,
+          savedAt: Date.now(),
+        }));
+      // Atualiza data de clientes já existentes
+      const updated = prev.map(stored => {
+        const match = parsed.find(c => c.name.toLowerCase() === stored.name.toLowerCase());
+        return match ? { ...stored, rawNotes: match.rawNotes, savedAt: Date.now() } : stored;
+      });
+      return [...updated, ...newEntries];
+    });
+  };
+
+  const handleLoadFromDatabase = (rawNotes: string) => {
+    setInputData(prev => {
+      const clean = prev.trim();
+      return clean ? clean + '\n' + rawNotes : rawNotes;
+    });
+    addToast('Clientes carregados no painel', 'success');
+  };
+
+  const handleRemoveFromDatabase = (id: string) => {
+    setClientDatabase(prev => prev.filter(c => c.id !== id));
+  };
+
+  const handleClearDatabase = () => {
+    setClientDatabase([]);
+    addToast('Banco limpo', 'info');
+  };
+
+  // --- Handlers: Lembretes ---
+  const handleAddReminder = (client: ParsedClient, scheduledFor: number) => {
+    const reminder: Reminder = {
+      id: crypto.randomUUID(),
+      clientId: client.id,
+      clientName: client.name,
+      scheduledFor,
+      fired: false,
+    };
+    setReminders(prev => {
+      const withoutOld = prev.filter(r => r.clientId !== client.id);
+      return [...withoutOld, reminder];
+    });
+    const delay = scheduledFor - Date.now();
+    if (delay > 0 && delay < 24 * 60 * 60 * 1000) {
+      setTimeout(() => {
+        addToast(`⏰ Lembrete: ${client.name}`, 'warning');
+        if (Notification.permission === 'granted') {
+          new Notification('Cobrança Elite', { body: `Hora de cobrar: ${client.name}`, icon: '/favicon.ico' });
+        }
+        setReminders(prev => prev.map(r => r.id === reminder.id ? { ...r, fired: true } : r));
+      }, delay);
+    }
+    const dt = new Date(scheduledFor);
+    const label = dt.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+    addToast(`🔔 Lembrete agendado: ${label}`, 'info');
   };
 
   const stopFocusMode = () => {
@@ -827,7 +984,14 @@ function App() {
           </div>
 
           {/* Footer da sidebar */}
-          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-4">
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-4 space-y-2">
+            <button onClick={() => setIsDatabaseOpen(true)} className="w-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2">
+              <Database size={16} />
+              Banco de Clientes
+              {clientDatabase.length > 0 && (
+                <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{clientDatabase.length}</span>
+              )}
+            </button>
             <button onClick={() => setIsConfigOpen(true)} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
               <Settings size={16} /> Configurações
             </button>
@@ -857,7 +1021,7 @@ function App() {
           ) : resultViewMode !== 'focus' ? (
             <div className="p-3 sm:p-6 animate-fade-in-up">
               {/* Dashboard */}
-              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-5 sm:mb-6">
                 <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
                   <div className="flex items-center gap-1.5 mb-1.5"><Users size={13} className="text-emerald-500 dark:text-emerald-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Clientes</span></div>
                   <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{dashboardStats.total}</div>
@@ -869,6 +1033,12 @@ function App() {
                 <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
                   <div className="flex items-center gap-1.5 mb-1.5"><AlertTriangle size={13} className="text-red-500 dark:text-red-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Vencidos</span></div>
                   <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</div>
+                </div>
+                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
+                  <div className="flex items-center gap-1.5 mb-1.5"><CheckCircle size={13} className="text-emerald-500 dark:text-emerald-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Recebido</span></div>
+                  <div className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                    {todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : <span className="text-gray-400 dark:text-slate-600 text-base">—</span>}
+                  </div>
                 </div>
               </div>
 
@@ -889,7 +1059,7 @@ function App() {
               {/* Cards */}
               <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
                 {getFilteredResults().length > 0 ? getFilteredResults().map((client) => (
-                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} />
+                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} isPaid={payments.some(p => p.clientId === client.id && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientId === client.id && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
                 )) : (
                   <div className="text-center py-16 text-gray-500 dark:text-slate-600 bg-white dark:bg-slate-800/30 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
                     <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
@@ -923,7 +1093,7 @@ function App() {
           </div>
           <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
             <div className="w-full max-w-2xl h-full flex flex-col justify-center">
-              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} />
+              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} isPaid={payments.some(p => p.clientId === getFilteredResults()[focusIndex].id && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientId === getFilteredResults()[focusIndex].id && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
             </div>
           </div>
           <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
@@ -937,6 +1107,27 @@ function App() {
       {/* ── SIDEBARS ── */}
       <HistorySidebar isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} history={actionHistory} />
       <LinksSidebar isOpen={isLinksOpen} onClose={() => setIsLinksOpen(false)} links={config.quickLinks || []} onCopy={copyToClipboard} onManage={() => { setIsLinksOpen(false); setIsConfigOpen(true); }} />
+
+      {/* ── NOVOS MODAIS ── */}
+      <PaymentModal
+        client={payingClient}
+        onClose={() => setPayingClient(null)}
+        onConfirm={handleMarkAsPaid}
+      />
+      <ReminderModal
+        client={reminderClient}
+        defaultTime={config.defaultTime || '20:00'}
+        onClose={() => setReminderClient(null)}
+        onConfirm={handleAddReminder}
+      />
+      <DatabaseModal
+        isOpen={isDatabaseOpen}
+        onClose={() => setIsDatabaseOpen(false)}
+        clients={clientDatabase}
+        onLoad={handleLoadFromDatabase}
+        onRemove={handleRemoveFromDatabase}
+        onClearAll={handleClearDatabase}
+      />
 
       {/* ── MODAIS ── */}
       <ConfigModal isOpen={isConfigOpen} onClose={() => setIsConfigOpen(false)} config={config} onSave={(newConf) => { setConfig(newConf); setIsConfigOpen(false); addToast('Salvo', 'success'); }} />

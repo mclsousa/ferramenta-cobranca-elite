@@ -94,3 +94,27 @@ export interface ActionLog {
   timestamp: number;
   action: 'whatsapp' | 'copy' | 'mark' | 'receipt';
 }
+
+export interface PaymentRecord {
+  id: string;
+  clientId: string;
+  clientName: string;
+  amount: number;
+  paidAt: number; // timestamp
+}
+
+export interface StoredClient {
+  id: string;
+  name: string;
+  rawNotes: string;
+  type: 'iptv' | 'p2p';
+  savedAt: number; // timestamp
+}
+
+export interface Reminder {
+  id: string;
+  clientId: string;
+  clientName: string;
+  scheduledFor: number; // timestamp
+  fired: boolean;
+}

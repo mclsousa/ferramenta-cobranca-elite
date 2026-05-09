@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { ParsedClient, AppConfig, ResultViewMode } from '../types';
 import { extractPhone, padZero, formatDate, processSpinSyntax, applyAntiBan, extractCredentials } from '../utils/helpers';
-import { Copy, Phone, Edit, MessageSquare, ExternalLink, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap } from 'lucide-react';
+import { Copy, Phone, Edit, MessageSquare, ExternalLink, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, DollarSign, Bell } from 'lucide-react';
 
 interface ClientCardProps {
   client: ParsedClient;
@@ -11,11 +11,15 @@ interface ClientCardProps {
   viewMode: ResultViewMode;
   searchQuery: string;
   isSent: boolean;
+  isPaid?: boolean;
+  hasReminder?: boolean;
   onEdit: (client: ParsedClient) => void;
   onCopy: (text: string) => void;
   onMarkAsSent: (id: string, action: 'whatsapp' | 'copy' | 'receipt') => void;
   onOpenReceipt: (client: ParsedClient) => void;
-  onLinkClient: (client: ParsedClient) => void; // New Prop
+  onLinkClient: (client: ParsedClient) => void;
+  onMarkAsPaid?: (client: ParsedClient) => void;
+  onAddReminder?: (client: ParsedClient) => void;
 }
 
 const WhatsappIcon = ({ size = 16, className }: { size?: number, className?: string }) => (
@@ -48,9 +52,9 @@ const getAvatarColor = (name: string) => {
   return colors[name.charCodeAt(0) % colors.length];
 };
 
-const ClientCard: React.FC<ClientCardProps> = ({ 
-  client, config, isExpiredMode, viewMode, searchQuery, isSent, 
-  onEdit, onCopy, onMarkAsSent, onOpenReceipt, onLinkClient 
+const ClientCard: React.FC<ClientCardProps> = ({
+  client, config, isExpiredMode, viewMode, searchQuery, isSent, isPaid, hasReminder,
+  onEdit, onCopy, onMarkAsSent, onOpenReceipt, onLinkClient, onMarkAsPaid, onAddReminder
 }) => {
   const isFocusMode = viewMode === 'focus';
   // In Focus Mode, always start expanded. In Grid, collapsed by default.
@@ -358,11 +362,18 @@ const ClientCard: React.FC<ClientCardProps> = ({
         </div>
       )}
 
-      {isSent && (
-        <div className="absolute top-2 right-2 z-20">
-            <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
-                <CheckCircle size={9} /> Enviado
+      {(isSent || isPaid) && (
+        <div className="absolute top-2 right-2 z-20 flex flex-col items-end gap-1">
+          {isPaid && (
+            <div className="flex items-center gap-1 bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
+              <DollarSign size={9} /> Pago
             </div>
+          )}
+          {isSent && !isPaid && (
+            <div className="flex items-center gap-1 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm animate-in fade-in">
+              <CheckCircle size={9} /> Enviado
+            </div>
+          )}
         </div>
       )}
       
@@ -449,6 +460,16 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 <button onClick={(e) => { e.stopPropagation(); onEdit(client); }} className="p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-primary dark:hover:text-emerald-400 transition-colors" title="Editar">
                     <Edit size={15} />
                 </button>
+                {onAddReminder && (
+                  <button onClick={() => onAddReminder(client)} className={`p-1.5 rounded transition-colors ${hasReminder ? 'text-violet-500 dark:text-violet-400' : 'text-gray-300 dark:text-slate-600 hover:text-violet-500 dark:hover:text-violet-400'}`} title="Lembrete">
+                    <Bell size={15} />
+                  </button>
+                )}
+                {onMarkAsPaid && (
+                  <button onClick={() => onMarkAsPaid(client)} className={`p-1.5 rounded transition-colors ${isPaid ? 'text-emerald-500 dark:text-emerald-400' : 'text-gray-300 dark:text-slate-600 hover:text-emerald-500 dark:hover:text-emerald-400'}`} title={isPaid ? 'Pago' : 'Marcar como pago'}>
+                    <DollarSign size={15} />
+                  </button>
+                )}
                 <button onClick={() => handleAction('whatsapp')} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-100'}`} title="WhatsApp">
                     <WhatsappIcon size={15} />
                 </button>
