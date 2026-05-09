@@ -729,37 +729,37 @@ function App() {
           ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}>
           {/* Cabeçalho da sidebar (mobile: mostra fechar) */}
-          <div className="flex-shrink-0 md:hidden flex items-center justify-between px-4 pt-4 pb-2">
-            <span className="text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-widest">Painel</span>
+          <div className="flex-shrink-0 md:hidden flex items-center justify-between px-5 pt-5 pb-3">
+            <span className="text-sm font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest">Painel</span>
             <button
               onClick={() => setIsSidebarOpen(false)}
-              className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
             >
-              <X size={16} />
+              <X size={20} />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
 
             {/* Aviso Sexta */}
             {weekday.mode === 'friday_double' && (
-              <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-start gap-2">
-                <Info size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-amber-300 leading-snug">Sexta: amanhã + depois de amanhã</p>
+              <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl flex items-start gap-2.5">
+                <Info size={16} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-amber-300 leading-snug">Sexta: amanhã + depois de amanhã serão incluídos</p>
               </div>
             )}
 
             {/* Entrada de Dados */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Dados</span>
-                <div className="flex gap-1">
+                <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Dados</span>
+                <div className="flex gap-1.5">
                   <input type="file" accept=".csv,.txt,.tsv" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
-                  <button onClick={() => fileInputRef.current?.click()} className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
-                    <Upload size={10} /> Arquivo
+                  <button onClick={() => fileInputRef.current?.click()} className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+                    <Upload size={13} /> Arquivo
                   </button>
-                  <button onClick={handlePasteInput} className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
-                    <Clipboard size={10} /> Colar
+                  <button onClick={handlePasteInput} className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
+                    <Clipboard size={13} /> Colar
                   </button>
                 </div>
               </div>
@@ -768,33 +768,33 @@ function App() {
                 value={inputData}
                 onChange={(e) => setInputData(e.target.value)}
                 placeholder="Cole aqui a lista (IPTV ou P2P)..."
-                className="w-full h-32 p-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-1 focus:ring-emerald-500 outline-none resize-none font-mono text-[11px] placeholder-gray-400 dark:placeholder-slate-600 transition-all"
+                className="w-full h-36 p-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none font-mono text-xs placeholder-gray-400 dark:placeholder-slate-600 transition-all leading-relaxed"
               />
             </div>
 
             {/* Filtro principal */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Filtro</span>
-              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-600/20 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2">
-                <CalendarCheck size={13} />
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Filtro</span>
+              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+                <CalendarCheck size={16} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Início</label>
-                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
+                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Fim</label>
-                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
+                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-900/30">
-                  <Filter size={12} /> Processar
+                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
+                  <Filter size={15} /> Processar
                 </button>
-                <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-2 px-2.5 rounded-lg transition-all" title="Limpar">
-                  <Trash2 size={14} />
+                <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-3 px-3.5 rounded-xl transition-all" title="Limpar">
+                  <Trash2 size={16} />
                 </button>
               </div>
             </div>
@@ -802,34 +802,34 @@ function App() {
             <div className="border-t border-gray-200 dark:border-slate-800" />
 
             {/* Vencidos */}
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
-                <CalendarX size={11} className="text-red-500" /> Vencidos
+            <div className="space-y-3">
+              <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                <CalendarX size={14} className="text-red-500" /> Vencidos
               </span>
-              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-400 border border-red-500/20 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2">
-                <History size={13} /> Vencidos (4-5 dias)
+              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/20 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
+                <History size={16} /> Vencidos (4-5 dias)
               </button>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Início</label>
-                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
+                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
                 <div>
-                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Fim</label>
-                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
+                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
-              <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/20">
-                <Search size={12} /> Filtrar Vencidos
+              <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-lg shadow-red-900/20">
+                <Search size={15} /> Filtrar Vencidos
               </button>
             </div>
 
           </div>
 
           {/* Footer da sidebar */}
-          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-3">
-            <button onClick={() => setIsConfigOpen(true)} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-2">
-              <Settings size={14} /> Configurações
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-4">
+            <button onClick={() => setIsConfigOpen(true)} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
+              <Settings size={16} /> Configurações
             </button>
           </div>
         </aside>
