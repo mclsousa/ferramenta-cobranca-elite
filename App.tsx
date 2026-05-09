@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { 
-  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users, 
-  CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList, 
+import {
+  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users,
+  CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList,
   History, Play, X, ChevronLeft, ChevronRight, CheckCircle, Clock, Link as LinkIcon, Copy, MessageSquare, ExternalLink,
-  Clipboard, Rocket, Upload, AlertOctagon
+  Clipboard, Rocket, Upload, AlertOctagon, Menu
 } from 'lucide-react';
 import { ParsedClient, AppConfig, ViewMode, ResultViewMode, ToastMessage, DateRange, ActionLog } from './types';
 import { DEFAULT_CONFIG } from './constants';
@@ -22,11 +22,13 @@ function App() {
   // --- Theme State ---
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      return saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+      const saved = localStorage.getItem('themeElite');
+      return saved ? saved === 'dark' : true;
     }
-    return false;
+    return true;
   });
+
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // --- Configuration State (With Migration Logic) ---
   const [config, setConfig] = useState<AppConfig>(() => {
@@ -203,7 +205,7 @@ function App() {
   // --- Effects ---
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDarkMode);
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    localStorage.setItem('themeElite', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   useEffect(() => {
@@ -656,555 +658,329 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
+    <div className="h-screen flex flex-col bg-gray-100 dark:bg-slate-950 text-gray-800 dark:text-slate-100 overflow-hidden">
       
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-white/90 dark:bg-gray-800/90 backdrop-blur-md shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors h-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between">
-          <div className="flex items-center gap-2">
-             <div className="p-1.5 bg-gradient-to-br from-primary to-primary-hover rounded-lg shadow text-white">
-                <Users size={18} />
-             </div>
-             <h1 className="text-lg font-bold tracking-tight text-gray-800 dark:text-white hidden sm:block">
-               Cobrança Fácil
-             </h1>
+      {/* ── HEADER ── */}
+      <header className="flex-shrink-0 z-40 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 h-14 flex items-center px-3 sm:px-5 justify-between gap-2">
+        <div className="flex items-center gap-2">
+          {/* Hambúrguer — só aparece no mobile */}
+          <button
+            onClick={() => setIsSidebarOpen(v => !v)}
+            className="md:hidden p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-100 transition-colors"
+            aria-label="Menu"
+          >
+            <Menu size={20} />
+          </button>
+          <div className="p-1.5 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg shadow-lg shadow-emerald-500/20 text-white">
+            <Users size={16} />
           </div>
-          
-          <div className="flex items-center gap-2">
-             {viewMode === 'results' && resultViewMode !== 'focus' && (
-                <>
-                    <button 
-                        onClick={() => setIsLinksOpen(true)}
-                        className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400 transition-colors mr-1"
-                        title="Links Rápidos"
-                    >
-                        <LinkIcon size={18} />
-                    </button>
+          <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
+            Cobrança <span className="text-emerald-500 dark:text-emerald-400">Elite</span>
+          </h1>
+        </div>
 
-                    <button 
-                        onClick={() => setIsHistoryOpen(true)}
-                        className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200 transition-colors relative"
-                        title="Histórico de Sessão"
-                    >
-                        <History size={18} />
-                        {actionHistory.length > 0 && <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>}
-                    </button>
-
-                    <button 
-                        onClick={() => startFocusMode(true)}
-                        className="flex items-center gap-1.5 bg-orange-100 hover:bg-orange-200 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 dark:hover:bg-orange-900/50 px-3 py-1.5 rounded-full text-xs font-bold transition-all border border-orange-200 dark:border-orange-800/50 mr-1"
-                        title="Fila de Disparo (Auto-avanço)"
-                    >
-                        <Rocket size={14} /> Fila
-                    </button>
-
-                    <button 
-                        onClick={() => startFocusMode(false)}
-                        className="flex items-center gap-1.5 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-4 py-1.5 rounded-full text-xs font-bold transition-all shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 active:scale-95 mr-2"
-                        title="Modo Foco (Um por vez)"
-                    >
-                        <Play size={14} fill="currentColor" /> Foco
-                    </button>
-
-                    <div className="flex bg-gray-100 dark:bg-gray-700 rounded-md p-0.5 border border-gray-200 dark:border-gray-600">
-                        <button 
-                            onClick={() => setResultViewMode('grid')}
-                            className={`p-1.5 rounded-sm transition-all ${resultViewMode === 'grid' ? 'bg-white dark:bg-gray-600 shadow-sm text-primary' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-                            title="Grade"
-                        >
-                            <LayoutGrid size={16} />
-                        </button>
-                        <button 
-                            onClick={() => setResultViewMode('list')}
-                            className={`p-1.5 rounded-sm transition-all ${resultViewMode === 'list' ? 'bg-white dark:bg-gray-600 shadow-sm text-primary' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'}`}
-                            title="Lista"
-                        >
-                            <LayoutList size={16} />
-                        </button>
-                    </div>
-                </>
-             )}
-
-             <button 
-                onClick={() => setIsDarkMode(!isDarkMode)}
-                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 transition-colors focus:ring-2 focus:ring-primary/50 outline-none ml-1"
-             >
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
-             </button>
-          </div>
+        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          {results.length > 0 && resultViewMode !== 'focus' && (
+            <>
+              <button onClick={() => setIsLinksOpen(true)} className="hidden sm:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors" title="Links Rápidos">
+                <LinkIcon size={17} />
+              </button>
+              <button onClick={() => setIsHistoryOpen(true)} className="hidden sm:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-100 transition-colors relative" title="Histórico">
+                <History size={17} />
+                {actionHistory.length > 0 && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>}
+              </button>
+              <div className="hidden sm:block w-px h-5 bg-gray-200 dark:bg-slate-700 mx-0.5" />
+              <button onClick={() => startFocusMode(true)} className="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-amber-500/20" title="Fila">
+                <Rocket size={13} /> <span className="hidden sm:inline">Fila</span>
+              </button>
+              <button onClick={() => startFocusMode(false)} className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg shadow-violet-900/30 active:scale-95" title="Foco">
+                <Play size={13} fill="currentColor" /> <span className="hidden sm:inline">Foco</span>
+              </button>
+              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-0.5 border border-gray-200 dark:border-slate-700">
+                <button onClick={() => setResultViewMode('grid')} className={`p-1.5 rounded transition-all ${resultViewMode === 'grid' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`} title="Grade"><LayoutGrid size={15} /></button>
+                <button onClick={() => setResultViewMode('list')} className={`p-1.5 rounded transition-all ${resultViewMode === 'list' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`} title="Lista"><LayoutList size={15} /></button>
+              </div>
+            </>
+          )}
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-500 hover:text-gray-800 dark:hover:text-slate-300 transition-colors" title={isDarkMode ? 'Modo claro' : 'Modo escuro'}>
+            {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
+          </button>
         </div>
       </header>
 
-      {/* Main Content */}
-      <main className="flex-grow container max-w-7xl mx-auto px-3 sm:px-4 py-6 relative">
-        
-        {viewMode === 'input' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 animate-fade-in">
-            {/* ... (Input UI) ... */}
-            <div className="lg:col-span-2 space-y-5">
-              {/* AVISO DE CALENDÁRIO */}
-              {weekday.mode === 'friday_double' && (
-                <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 p-3 rounded-lg flex items-start gap-3">
-                  <Info size={18} className="text-amber-500 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm">
-                    <p className="font-semibold text-amber-700 dark:text-amber-300">
-                      Sexta-feira: o filtro "Próximos" cobre amanhã + depois de amanhã
-                    </p>
-                    <p className="text-amber-600 dark:text-amber-400 text-xs mt-0.5">{weekday.todayLabel}</p>
-                  </div>
-                </div>
-              )}
+      {/* ── BODY ── */}
+      <div className="flex flex-1 overflow-hidden relative">
 
-              <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between mb-3 text-gray-800 dark:text-gray-100 border-b border-gray-100 dark:border-gray-700 pb-2">
-                    <div className="flex items-center gap-2">
-                        <Settings size={16} className="text-primary" />
-                        <h2 className="text-base font-semibold">Entrada de Dados</h2>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <input
-                          type="file"
-                          accept=".csv,.txt,.tsv"
-                          ref={fileInputRef}
-                          onChange={handleFileUpload}
-                          className="hidden"
-                      />
-                      <button
-                          onClick={() => fileInputRef.current?.click()}
-                          className="flex items-center gap-1 text-xs bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 px-2 py-1.5 rounded hover:bg-violet-100 dark:hover:bg-violet-900/40 transition-colors"
-                          title="Carregar arquivo CSV ou TXT"
-                      >
-                          <Upload size={14} /> Arquivo
-                      </button>
-                      <button 
-                          onClick={handlePasteInput}
-                          className="flex items-center gap-1 text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 px-2 py-1.5 rounded hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors"
-                          title="Colar da área de transferência (Adiciona ao final)"
-                      >
-                          <Clipboard size={14} /> Colar
-                      </button>
-                    </div>
-                </div>
-                
-                <textarea 
-                  ref={textareaRef}
-                  value={inputData}
-                  onChange={(e) => setInputData(e.target.value)}
-                  placeholder="Cole aqui a lista (IPTV ou P2P)..."
-                  className="w-full h-48 p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800/50 text-gray-900 dark:text-gray-100 focus:ring-1 focus:ring-primary outline-none resize-y font-mono text-xs transition-all shadow-inner"
-                />
+        {/* Backdrop mobile */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/60 md:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
 
-                <div className="mt-5 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm">
-                  {/* ... Filter buttons ... */}
-                  <div className="flex items-center gap-2 mb-3">
-                     <Filter size={14} className="text-gray-400" />
-                     <h3 className="text-xs font-bold text-gray-600 dark:text-gray-300 uppercase tracking-wide">Filtro de Processamento</h3>
-                  </div>
-                  
-                  <div className="mb-4">
-                     <button 
-                        onClick={handleFilterUpcoming}
-                        className="w-full bg-blue-50 dark:bg-blue-900/10 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/20 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 border border-blue-100 dark:border-blue-800/50"
-                        title={weekday.mode === 'friday_double' ? 'Sexta: amanhã + depois de amanhã' : 'Amanhã'}
-                     >
-                        <CalendarCheck size={16} />
-                        {weekday.mode === 'friday_double'
-                          ? 'Próximos (Amanhã + Depois)'
-                          : 'Próximos (Amanhã)'}
-                     </button>
-                  </div>
+        {/* ── SIDEBAR ── */}
+        <aside className={`
+          fixed md:relative inset-y-0 left-0 z-50
+          w-72 md:w-64 flex-shrink-0
+          bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800
+          flex flex-col overflow-hidden
+          transition-transform duration-300 ease-in-out
+          ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
+        `}>
+          {/* Cabeçalho da sidebar (mobile: mostra fechar) */}
+          <div className="flex-shrink-0 md:hidden flex items-center justify-between px-4 pt-4 pb-2">
+            <span className="text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-widest">Painel</span>
+            <button
+              onClick={() => setIsSidebarOpen(false)}
+              className="p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
 
-                  <div className="grid grid-cols-2 gap-3 mb-4">
-                    <div className="group">
-                      <label className="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Data Início</label>
-                      <input 
-                        type="date" 
-                        value={unifiedDates.start}
-                        onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})}
-                        className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 dark:text-white focus:ring-1 focus:ring-primary text-sm [color-scheme:light] dark:[color-scheme:dark]"
-                      />
-                    </div>
-                    <div className="group">
-                      <label className="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Data Fim</label>
-                      <input 
-                        type="date" 
-                        value={unifiedDates.end}
-                        onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})}
-                        className="w-full p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 dark:text-white focus:ring-1 focus:ring-primary text-sm [color-scheme:light] dark:[color-scheme:dark]"
-                      />
-                    </div>
-                  </div>
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
 
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={() => processData(unifiedDates, false)}
-                      className="flex-1 bg-gradient-to-r from-primary to-primary-hover text-white py-2 px-4 rounded-lg text-sm font-semibold shadow-md shadow-primary/10 hover:shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                    >
-                      <Filter size={16} /> Processar
-                    </button>
-                    <button 
-                      onClick={() => {
-                        setInputData('');
-                        setUnifiedDates({start: '', end: ''});
-                        addToast('Limpo', 'info');
-                      }}
-                      className="bg-white dark:bg-transparent border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 py-2 px-3 rounded-lg transition-all hover:text-red-500"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+            {/* Aviso Sexta */}
+            {weekday.mode === 'friday_double' && (
+              <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-lg flex items-start gap-2">
+                <Info size={14} className="text-amber-400 mt-0.5 flex-shrink-0" />
+                <p className="text-xs text-amber-300 leading-snug">Sexta: amanhã + depois de amanhã</p>
+              </div>
+            )}
+
+            {/* Entrada de Dados */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Dados</span>
+                <div className="flex gap-1">
+                  <input type="file" accept=".csv,.txt,.tsv" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+                  <button onClick={() => fileInputRef.current?.click()} className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                    <Upload size={10} /> Arquivo
+                  </button>
+                  <button onClick={handlePasteInput} className="text-[10px] bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-2 py-1 rounded transition-colors flex items-center gap-1">
+                    <Clipboard size={10} /> Colar
+                  </button>
                 </div>
               </div>
+              <textarea
+                ref={textareaRef}
+                value={inputData}
+                onChange={(e) => setInputData(e.target.value)}
+                placeholder="Cole aqui a lista (IPTV ou P2P)..."
+                className="w-full h-32 p-3 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-1 focus:ring-emerald-500 outline-none resize-none font-mono text-[11px] placeholder-gray-400 dark:placeholder-slate-600 transition-all"
+              />
             </div>
 
-            <div className="space-y-5">
-              <div className="bg-surface-light dark:bg-surface-dark p-5 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                <div className="flex items-center gap-2 mb-3 text-red-600 dark:text-red-400 border-b border-gray-100 dark:border-gray-700 pb-2">
-                  <CalendarX size={16} />
-                  <h2 className="text-base font-semibold">Filtro de Vencidos</h2>
-                </div>
-                
-                <div className="space-y-3">
-                    <button 
-                        onClick={handleFilterExpiredRecent}
-                        className="w-full bg-orange-50 dark:bg-orange-900/10 text-orange-700 dark:text-orange-300 hover:bg-orange-100 dark:hover:bg-orange-900/20 py-2 px-3 rounded-lg text-sm font-medium transition-all flex items-center justify-center gap-2 border border-orange-200 dark:border-orange-800/50"
-                    >
-                        <History size={16} />
-                        Vencidos (4-5 dias)
-                    </button>
-
-                    <div className="border-t border-gray-100 dark:border-gray-700 my-2"></div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                        <div>
-                            <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Início</label>
-                            <input 
-                                type="date" 
-                                value={expiredDates.start}
-                                onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})}
-                                className="w-full p-1.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-xs dark:text-white focus:ring-1 focus:ring-red-500 outline-none [color-scheme:light] dark:[color-scheme:dark]"
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-[10px] font-bold uppercase text-gray-400 mb-1">Fim</label>
-                            <input 
-                                type="date" 
-                                value={expiredDates.end}
-                                onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})}
-                                className="w-full p-1.5 rounded-md border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50 text-xs dark:text-white focus:ring-1 focus:ring-red-500 outline-none [color-scheme:light] dark:[color-scheme:dark]"
-                            />
-                        </div>
-                    </div>
-
-                    <button 
-                      onClick={() => processData(expiredDates, true)}
-                      className="w-full bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all active:scale-[0.98] flex items-center justify-center gap-2"
-                    >
-                      <Search size={16} /> Filtrar
-                    </button>
-                </div>
-              </div>
-
-              <button 
-                onClick={() => setIsConfigOpen(true)}
-                className="w-full bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 p-3 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium transition-all flex items-center justify-center gap-2"
-              >
-                <Settings size={16} /> Configurações
+            {/* Filtro principal */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Filtro</span>
+              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-400 border border-emerald-600/20 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2">
+                <CalendarCheck size={13} />
+                {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
-            </div>
-          </div>
-        )}
-
-        {/* ... (Rest of the render: Dashboard, Grid, HistorySidebar, etc) ... */}
-        {viewMode === 'results' && resultViewMode !== 'focus' && (
-          <div className="animate-fade-in-up">
-            {/* Dashboard Stats */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2 mb-1">
-                        <Users size={16} className="text-primary" />
-                        <span className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase">Clientes</span>
-                    </div>
-                    <div className="text-2xl font-bold text-gray-800 dark:text-white">{dashboardStats.total}</div>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2 mb-1">
-                        <CalendarCheck size={16} className="text-yellow-600" />
-                        <span className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase">Hoje</span>
-                    </div>
-                    <div className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">{dashboardStats.today}</div>
-                </div>
-
-                <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center gap-2 mb-1">
-                        <AlertTriangle size={16} className="text-red-600" />
-                        <span className="text-gray-500 dark:text-gray-400 text-[10px] font-bold uppercase">Vencidos</span>
-                    </div>
-                    <div className="text-2xl font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</div>
-                </div>
-            </div>
-
-            {/* Result Header */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
-              <div>
-                <button 
-                  onClick={() => setViewMode('input')} 
-                  className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-blue-500 dark:hover:border-blue-400 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 shadow-sm hover:shadow-md transition-all font-bold text-sm group mb-2 active:scale-95"
-                >
-                  <ArrowLeft size={18} className="transition-transform group-hover:-translate-x-1" /> Voltar
-                </button>
-                <h2 className="text-lg font-bold text-gray-800 dark:text-white">{resultTitle}</h2>
-              </div>
-
-              <div className="flex gap-2">
-                <div className="relative group flex-1 md:flex-none">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" size={14} />
-                  <input 
-                    type="text" 
-                    placeholder="Pesquisar..." 
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 pr-3 py-2 w-full md:w-56 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-1 focus:ring-primary outline-none text-sm shadow-sm"
-                  />
-                </div>
-                <button 
-                  onClick={handleExport}
-                  className="flex items-center justify-center gap-1.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 px-3 py-2 rounded-lg transition-all text-sm font-medium"
-                >
-                  <Download size={14} /> <span className="hidden sm:inline">CSV</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Results Grid/List */}
-            <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
-              {getFilteredResults().length > 0 ? (
-                getFilteredResults().map((client) => (
-                  <ClientCard 
-                    key={client.id} 
-                    client={client} 
-                    config={config} 
-                    isExpiredMode={isExpiredMode}
-                    viewMode={resultViewMode}
-                    searchQuery={searchQuery}
-                    isSent={!!sentClients[client.id]}
-                    onEdit={setEditingClient}
-                    onCopy={copyToClipboard}
-                    onMarkAsSent={handleMarkAsSent}
-                    onOpenReceipt={setReceiptClient}
-                    onLinkClient={setLinkingClient}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-dashed border-gray-300 dark:border-gray-700">
-                  <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* --- FOCUS MODE OVERLAY --- */}
-        {viewMode === 'results' && resultViewMode === 'focus' && getFilteredResults().length > 0 && (
-            <div className="fixed inset-0 z-50 bg-gray-100 dark:bg-gray-900 flex flex-col animate-in fade-in">
-                {/* Focus Header */}
-                <div className="h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-                    <div className="flex items-center gap-4">
-                        <button 
-                            onClick={stopFocusMode}
-                            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                        >
-                            <ArrowLeft size={24} className="text-gray-600 dark:text-gray-300" />
-                        </button>
-                        <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <span className="text-xs text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">Modo Foco</span>
-                                {isQueueMode && (
-                                    <span className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1 animate-pulse">
-                                        <Rocket size={10} /> FILA ATIVA
-                                    </span>
-                                )}
-                            </div>
-                            <span className="text-sm font-bold text-gray-800 dark:text-white">
-                                {focusIndex + 1} de {getFilteredResults().length}
-                            </span>
-                        </div>
-                    </div>
-                    <div className="w-1/3 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
-                        <div 
-                            className="h-full bg-primary transition-all duration-300 ease-out"
-                            style={{ width: `${((focusIndex + 1) / getFilteredResults().length) * 100}%` }}
-                        />
-                    </div>
-                </div>
-
-                {/* Focus Content */}
-                <div className="flex-1 flex items-center justify-center p-2 sm:p-8 overflow-hidden">
-                    <div className="w-full max-w-2xl h-full flex flex-col justify-center">
-                        <ClientCard 
-                            client={getFilteredResults()[focusIndex]} 
-                            config={config} 
-                            isExpiredMode={isExpiredMode}
-                            viewMode="focus"
-                            searchQuery={searchQuery}
-                            isSent={!!sentClients[getFilteredResults()[focusIndex].id]}
-                            onEdit={setEditingClient}
-                            onCopy={copyToClipboard}
-                            onMarkAsSent={handleMarkAsSent}
-                            onOpenReceipt={setReceiptClient}
-                            onLinkClient={setLinkingClient}
-                        />
-                    </div>
-                </div>
-
-                {/* Focus Controls */}
-                <div className="h-20 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex items-center justify-center gap-6 px-4">
-                    <button 
-                        onClick={handleFocusPrev}
-                        disabled={focusIndex === 0}
-                        className="p-3 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
-                    >
-                        <ChevronLeft size={24} />
-                    </button>
-                    
-                    <span className="text-sm text-gray-400 font-medium">Navegar</span>
-
-                    <button 
-                        onClick={handleFocusNext}
-                        disabled={focusIndex === getFilteredResults().length - 1}
-                        className="p-3 rounded-full bg-primary hover:bg-primary-hover text-white shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all transform active:scale-95"
-                    >
-                        <ChevronRight size={24} />
-                    </button>
-                </div>
-            </div>
-        )}
-      </main>
-
-      {/* Sidebars */}
-      <HistorySidebar 
-        isOpen={isHistoryOpen} 
-        onClose={() => setIsHistoryOpen(false)} 
-        history={actionHistory} 
-      />
-      
-      <LinksSidebar 
-        isOpen={isLinksOpen} 
-        onClose={() => setIsLinksOpen(false)} 
-        links={config.quickLinks || []} 
-        onCopy={copyToClipboard}
-        onManage={() => { setIsLinksOpen(false); setIsConfigOpen(true); }}
-      />
-      
-      {/* Modals & Toasts */}
-      <ConfigModal 
-        isOpen={isConfigOpen} 
-        onClose={() => setIsConfigOpen(false)} 
-        config={config} 
-        onSave={(newConf) => { setConfig(newConf); setIsConfigOpen(false); addToast('Salvo', 'success'); }} 
-      />
-      
-      <EditClientModal 
-        isOpen={!!editingClient} 
-        onClose={() => setEditingClient(null)} 
-        client={editingClient} 
-        config={config}
-        onSave={handleEditSave} 
-      />
-
-      <ReceiptModal 
-        isOpen={!!receiptClient} 
-        onClose={() => setReceiptClient(null)} 
-        client={receiptClient} 
-        config={config}
-        onConfirm={handleSendReceipt}
-      />
-
-      <LinkClientsModal 
-        isOpen={!!linkingClient}
-        onClose={() => setLinkingClient(null)}
-        masterClient={linkingClient}
-        allClients={flatResults}
-        onSave={handleSaveLinks}
-      />
-
-      {/* Modal de Relatório de Números Inválidos */}
-      {showInvalidReport && invalidClients.length > 0 && (
-        <div className="fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl max-w-lg w-full max-h-[80vh] flex flex-col border border-red-200 dark:border-red-900/50">
-            <div className="p-5 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-lg">
-                  <AlertOctagon className="text-red-600 dark:text-red-400" size={20} />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Início</label>
+                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
                 <div>
-                  <h2 className="text-base font-bold text-gray-800 dark:text-gray-100">
-                    Envio Manual Necessário
-                  </h2>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {invalidClients.length} cliente(s) com número inválido
-                  </p>
+                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Fim</label>
+                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
-              <button
-                onClick={() => setShowInvalidReport(false)}
-                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500"
-              >
-                <X size={18} />
+              <div className="flex gap-2">
+                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-900/30">
+                  <Filter size={12} /> Processar
+                </button>
+                <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-2 px-2.5 rounded-lg transition-all" title="Limpar">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="border-t border-gray-200 dark:border-slate-800" />
+
+            {/* Vencidos */}
+            <div className="space-y-2">
+              <span className="text-[10px] font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-1.5">
+                <CalendarX size={11} className="text-red-500" /> Vencidos
+              </span>
+              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-400 border border-red-500/20 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2">
+                <History size={13} /> Vencidos (4-5 dias)
+              </button>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Início</label>
+                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-red-500 dark:[color-scheme:dark]" />
+                </div>
+                <div>
+                  <label className="block text-[10px] text-gray-400 dark:text-slate-600 mb-1">Fim</label>
+                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full p-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-xs outline-none focus:ring-1 focus:ring-red-500 dark:[color-scheme:dark]" />
+                </div>
+              </div>
+              <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-2 px-3 rounded-lg text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/20">
+                <Search size={12} /> Filtrar Vencidos
               </button>
             </div>
 
-            <div className="overflow-y-auto p-5 space-y-2 flex-1">
-              {invalidClients.map((c, idx) => (
-                <div
-                  key={`${c.name}-${idx}`}
-                  className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/10 rounded-lg border border-red-100 dark:border-red-900/30"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-sm text-gray-800 dark:text-gray-100 truncate">
-                      {c.name}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-mono truncate">
-                      {c.phone} <span className="text-red-500">({c.reason})</span>
-                    </p>
+          </div>
+
+          {/* Footer da sidebar */}
+          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-3">
+            <button onClick={() => setIsConfigOpen(true)} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-2">
+              <Settings size={14} /> Configurações
+            </button>
+          </div>
+        </aside>
+
+        {/* ── ÁREA PRINCIPAL ── */}
+        <main className="flex-1 overflow-y-auto bg-gray-100 dark:bg-slate-950">
+          {results.length === 0 ? (
+            <div className="h-full flex items-center justify-center p-6 sm:p-8">
+              <div className="text-center space-y-5 max-w-xs">
+                <div className="w-16 h-16 rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700/50 flex items-center justify-center mx-auto shadow-sm">
+                  <Users size={30} className="text-gray-400 dark:text-slate-600" />
+                </div>
+                <div>
+                  <p className="text-gray-700 dark:text-slate-300 font-semibold">Pronto para cobrar</p>
+                  <p className="text-gray-500 dark:text-slate-500 text-sm mt-1 md:hidden">Abra o <span className="text-emerald-600 dark:text-emerald-400 font-medium">menu</span>, cole a lista e clique em <span className="text-emerald-600 dark:text-emerald-400 font-medium">Processar</span></p>
+                  <p className="text-gray-500 dark:text-slate-500 text-sm mt-1 hidden md:block">Cole a lista no painel e clique em <span className="text-emerald-600 dark:text-emerald-400 font-medium">Processar</span></p>
+                </div>
+                <div className="flex items-center justify-center gap-4 text-xs text-gray-400 dark:text-slate-600">
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> IPTV</span>
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-violet-500" /> P2P</span>
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> CSV</span>
+                </div>
+              </div>
+            </div>
+          ) : resultViewMode !== 'focus' ? (
+            <div className="p-3 sm:p-6 animate-fade-in-up">
+              {/* Dashboard */}
+              <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-5 sm:mb-6">
+                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
+                  <div className="flex items-center gap-1.5 mb-1.5"><Users size={13} className="text-emerald-500 dark:text-emerald-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Clientes</span></div>
+                  <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{dashboardStats.total}</div>
+                </div>
+                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
+                  <div className="flex items-center gap-1.5 mb-1.5"><CalendarCheck size={13} className="text-amber-500 dark:text-amber-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Hoje</span></div>
+                  <div className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">{dashboardStats.today}</div>
+                </div>
+                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
+                  <div className="flex items-center gap-1.5 mb-1.5"><AlertTriangle size={13} className="text-red-500 dark:text-red-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Vencidos</span></div>
+                  <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</div>
+                </div>
+              </div>
+
+              {/* Toolbar resultados */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-5">
+                <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300">{resultTitle}</h2>
+                <div className="flex gap-2">
+                  <div className="relative flex-1 sm:flex-none">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={13} />
+                    <input type="text" placeholder="Pesquisar..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 pr-3 py-2 w-full sm:w-44 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm placeholder-gray-400 dark:placeholder-slate-600 focus:ring-1 focus:ring-emerald-500 outline-none" />
                   </div>
+                  <button onClick={handleExport} className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 px-3 py-2 rounded-lg transition-all text-xs font-medium flex-shrink-0">
+                    <Download size={13} /> CSV
+                  </button>
+                </div>
+              </div>
+
+              {/* Cards */}
+              <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
+                {getFilteredResults().length > 0 ? getFilteredResults().map((client) => (
+                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} />
+                )) : (
+                  <div className="text-center py-16 text-gray-500 dark:text-slate-600 bg-white dark:bg-slate-800/30 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
+                    <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : null}
+        </main>
+      </div>
+
+      {/* ── MODO FOCO ── */}
+      {resultViewMode === 'focus' && getFilteredResults().length > 0 && (
+        <div className="fixed inset-0 z-50 bg-gray-50 dark:bg-slate-950 flex flex-col">
+          <div className="h-14 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
+            <div className="flex items-center gap-4">
+              <button onClick={stopFocusMode} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
+                <ArrowLeft size={20} className="text-gray-700 dark:text-slate-300" />
+              </button>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] text-gray-500 dark:text-slate-500 uppercase font-bold tracking-wider">Modo Foco</span>
+                  {isQueueMode && <span className="bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 animate-pulse"><Rocket size={9} /> FILA</span>}
+                </div>
+                <span className="text-sm font-bold text-gray-900 dark:text-white">{focusIndex + 1} / {getFilteredResults().length}</span>
+              </div>
+            </div>
+            <div className="w-48 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${((focusIndex + 1) / getFilteredResults().length) * 100}%` }} />
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
+            <div className="w-full max-w-2xl h-full flex flex-col justify-center">
+              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} />
+            </div>
+          </div>
+          <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
+            <button onClick={handleFocusPrev} disabled={focusIndex === 0} className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-20 disabled:cursor-not-allowed transition-all"><ChevronLeft size={22} /></button>
+            <span className="text-xs text-gray-400 dark:text-slate-600 font-medium">Navegar</span>
+            <button onClick={handleFocusNext} disabled={focusIndex === getFilteredResults().length - 1} className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-95"><ChevronRight size={22} /></button>
+          </div>
+        </div>
+      )}
+
+      {/* ── SIDEBARS ── */}
+      <HistorySidebar isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} history={actionHistory} />
+      <LinksSidebar isOpen={isLinksOpen} onClose={() => setIsLinksOpen(false)} links={config.quickLinks || []} onCopy={copyToClipboard} onManage={() => { setIsLinksOpen(false); setIsConfigOpen(true); }} />
+
+      {/* ── MODAIS ── */}
+      <ConfigModal isOpen={isConfigOpen} onClose={() => setIsConfigOpen(false)} config={config} onSave={(newConf) => { setConfig(newConf); setIsConfigOpen(false); addToast('Salvo', 'success'); }} />
+      <EditClientModal isOpen={!!editingClient} onClose={() => setEditingClient(null)} client={editingClient} config={config} onSave={handleEditSave} />
+      <ReceiptModal isOpen={!!receiptClient} onClose={() => setReceiptClient(null)} client={receiptClient} config={config} onConfirm={handleSendReceipt} />
+      <LinkClientsModal isOpen={!!linkingClient} onClose={() => setLinkingClient(null)} masterClient={linkingClient} allClients={flatResults} onSave={handleSaveLinks} />
+
+      {/* Relatório de Inválidos */}
+      {showInvalidReport && invalidClients.length > 0 && (
+        <div className="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl max-w-md w-full max-h-[80vh] flex flex-col border border-gray-200 dark:border-slate-700">
+            <div className="p-5 border-b border-gray-200 dark:border-slate-700 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-500/10 rounded-xl"><AlertOctagon className="text-red-400" size={18} /></div>
+                <div>
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-white">Envio Manual Necessário</h2>
+                  <p className="text-xs text-gray-500 dark:text-slate-400">{invalidClients.length} cliente(s) com número inválido</p>
+                </div>
+              </div>
+              <button onClick={() => setShowInvalidReport(false)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500"><X size={16} /></button>
+            </div>
+            <div className="overflow-y-auto p-4 space-y-2 flex-1">
+              {invalidClients.map((c, idx) => (
+                <div key={`${c.name}-${idx}`} className="p-3 bg-red-50 dark:bg-red-500/5 rounded-lg border border-red-200 dark:border-red-900/30">
+                  <p className="font-semibold text-sm text-gray-900 dark:text-white truncate">{c.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-slate-400 font-mono">{c.phone} <span className="text-red-600 dark:text-red-400">({c.reason})</span></p>
                 </div>
               ))}
             </div>
-
-            <div className="p-4 border-t border-gray-200 dark:border-gray-700 flex gap-2">
-              <button
-                onClick={() => {
-                  const text = invalidClients
-                    .map(c => `- ${c.name} | ${c.phone} (${c.reason})`)
-                    .join('\n');
-                  copyToClipboard(`⚠️ ENVIO MANUAL NECESSÁRIO:\n${text}`);
-                }}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all"
-              >
-                <Copy size={14} /> Copiar lista
+            <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex gap-2">
+              <button onClick={() => { const text = invalidClients.map(c => `- ${c.name} | ${c.phone} (${c.reason})`).join('\n'); copyToClipboard(`⚠️ ENVIO MANUAL NECESSÁRIO:\n${text}`); }} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all">
+                <Copy size={13} /> Copiar lista
               </button>
-              <button
-                onClick={() => setShowInvalidReport(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-              >
-                Fechar
-              </button>
+              <button onClick={() => setShowInvalidReport(false)} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all">Fechar</button>
             </div>
           </div>
         </div>
       )}
 
+      {/* ── TOASTS ── */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col gap-2 pointer-events-none">
         {toasts.map(t => (
-          <div key={t.id} className={`
-            pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-full shadow-lg text-white text-sm font-medium animate-bounce-in backdrop-blur-md
-            ${t.type === 'success' ? 'bg-green-600/90' : 
-              t.type === 'error' ? 'bg-red-600/90' : 
-              t.type === 'warning' ? 'bg-yellow-600/90' : 'bg-primary/90'}
-          `}>
-             {t.text}
+          <div key={t.id} className={`pointer-events-auto flex items-center gap-2 px-4 py-2 rounded-full shadow-xl text-white text-sm font-medium animate-bounce-in ${t.type === 'success' ? 'bg-emerald-600' : t.type === 'error' ? 'bg-red-600' : t.type === 'warning' ? 'bg-amber-600' : 'bg-gray-700'}`}>
+            {t.text}
           </div>
         ))}
       </div>

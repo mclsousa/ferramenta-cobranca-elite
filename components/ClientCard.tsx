@@ -31,6 +31,23 @@ const WhatsappIcon = ({ size = 16, className }: { size?: number, className?: str
     </svg>
 );
 
+const getInitials = (name: string) => {
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return parts[0].slice(0, 2).toUpperCase();
+};
+
+const getAvatarColor = (name: string) => {
+  const colors = [
+    'from-emerald-500 to-teal-600',
+    'from-violet-500 to-purple-600',
+    'from-blue-500 to-cyan-600',
+    'from-orange-500 to-amber-600',
+    'from-pink-500 to-rose-600',
+  ];
+  return colors[name.charCodeAt(0) % colors.length];
+};
+
 const ClientCard: React.FC<ClientCardProps> = ({ 
   client, config, isExpiredMode, viewMode, searchQuery, isSent, 
   onEdit, onCopy, onMarkAsSent, onOpenReceipt, onLinkClient 
@@ -97,27 +114,27 @@ const ClientCard: React.FC<ClientCardProps> = ({
     depoisDeAmanha.setDate(hoje.getDate() + 2);
 
     let prefixStr = '';
-    let colorClass = 'border-l-green-500'; 
+    let colorClass = 'border-l-emerald-500';
 
     if (isExpiredMode) {
       prefixStr = 'venceu';
-      colorClass = 'border-l-gray-500'; 
+      colorClass = 'border-l-slate-500';
     } else {
       if (vencDateOnly.getTime() < hoje.getTime()) {
         prefixStr = 'venceu';
-        colorClass = 'border-l-gray-500';
+        colorClass = 'border-l-slate-500';
       } else if (vencDateOnly.getTime() === hoje.getTime()) {
         prefixStr = 'vence hoje';
-        colorClass = 'border-l-red-700'; 
+        colorClass = 'border-l-red-500';
       } else if (vencDateOnly.getTime() === amanha.getTime()) {
         prefixStr = 'vence amanhã';
-        colorClass = 'border-l-red-500'; 
+        colorClass = 'border-l-orange-500';
       } else if (vencDateOnly.getTime() === depoisDeAmanha.getTime()) {
         prefixStr = 'vence em';
-        colorClass = 'border-l-yellow-500'; 
+        colorClass = 'border-l-amber-400';
       } else {
         prefixStr = 'vence em';
-        colorClass = 'border-l-green-500';
+        colorClass = 'border-l-emerald-500';
       }
     }
 
@@ -263,15 +280,15 @@ const ClientCard: React.FC<ClientCardProps> = ({
   };
 
   const containerClasses = `
-    group transition-all duration-300 ease-in-out
-    bg-surface-light dark:bg-surface-dark 
-    shadow-sm border border-gray-200 dark:border-gray-700 
-    ${isSent ? 'opacity-60 grayscale-[0.5]' : ''}
-    ${viewMode === 'list' 
-      ? 'flex items-center p-2 rounded-lg border-l-4 ' + statusColor 
+    group transition-all duration-200 ease-in-out
+    bg-white dark:bg-slate-800/90
+    shadow-sm border border-gray-200/80 dark:border-slate-700/40
+    ${isSent ? 'opacity-50' : ''}
+    ${viewMode === 'list'
+      ? 'flex items-center p-2 rounded-lg border-l-4 ' + statusColor
       : isFocusMode
-        ? 'flex flex-col rounded-2xl border-l-8 shadow-xl ' + statusColor
-        : 'flex flex-col md:flex-row rounded-xl overflow-hidden hover:shadow-md hover:-translate-y-0.5 border-l-4 ' + statusColor
+        ? 'flex flex-col rounded-2xl border-l-8 shadow-2xl ' + statusColor
+        : 'flex flex-col md:flex-row rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-0.5 border-l-4 ' + statusColor
     }
   `;
 
@@ -329,14 +346,14 @@ const ClientCard: React.FC<ClientCardProps> = ({
   return (
     <div className={`${containerClasses} relative overflow-hidden ${isFocusMode ? 'h-full' : ''}`}>
       
-      {!isFocusMode && (
+      {!isFocusMode && !isCollapsed && (
         <div className="absolute top-2 left-2 z-20">
-            <button 
-                onClick={() => setIsCollapsed(!isCollapsed)}
-                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
-                title={isCollapsed ? "Expandir" : "Recolher"}
+            <button
+                onClick={() => setIsCollapsed(true)}
+                className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-300 dark:text-slate-600 hover:text-gray-500 dark:hover:text-slate-300 transition-colors"
+                title="Recolher"
             >
-                {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
+                <ChevronUp size={14} />
             </button>
         </div>
       )}
@@ -349,117 +366,96 @@ const ClientCard: React.FC<ClientCardProps> = ({
         </div>
       )}
       
-      {/* COLLAPSED STATE (Only available in Grid Mode) */}
+      {/* COLLAPSED STATE */}
       {isCollapsed && !isFocusMode ? (
-        <div className="flex-1 p-3 pl-10 flex flex-col justify-center min-h-[60px]">
-            <div className="flex items-center justify-between">
-                <div className="flex flex-col">
-                    <div className="font-bold text-sm text-gray-800 dark:text-gray-100 flex items-center gap-2 flex-wrap">
-                        <HighlightedText text={client.name} query={searchQuery} />
-                        
-                        <span className="text-[10px] font-normal uppercase opacity-70 border border-gray-200 dark:border-gray-600 px-1 rounded ml-1">
-                             {statusText.split('(')[0].trim()}
-                        </span>
-                        
-                        {isCustomMessage && (
-                            <div className="flex items-center gap-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 text-[9px] px-1.5 py-0.5 rounded font-medium">
-                                <PenTool size={9} /> Custom
-                            </div>
-                        )}
-                    </div>
-                    
+        <div className="flex-1 flex items-center gap-3 px-3 py-2.5 min-h-[66px]">
+            {/* Avatar */}
+            <button
+                onClick={() => setIsCollapsed(false)}
+                className={`flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br ${getAvatarColor(client.name)} flex items-center justify-center text-white text-sm font-bold shadow-md hover:opacity-90 transition-opacity select-none`}
+                title="Expandir"
+            >
+                {getInitials(client.name)}
+            </button>
+
+            {/* Info */}
+            <div className="flex-1 min-w-0">
+                <div className="font-bold text-sm text-gray-800 dark:text-slate-100 flex items-center gap-1.5 flex-wrap leading-tight">
+                    <HighlightedText text={client.name} query={searchQuery} />
                     {hasLinkedClients && (
-                        <div className="text-[10px] text-blue-600 dark:text-blue-400 flex items-center gap-1 mt-0.5">
-                            <LinkIcon size={10} />
-                            {client.linked!.map(l => l.name).join(', ')}
-                        </div>
+                        <span className="text-[9px] bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded-full font-medium">
+                            +{client.linked?.length}
+                        </span>
                     )}
-
-                    {activeTags.length > 0 && (
-                        <div className="flex items-center gap-1 mt-1 flex-wrap">
-                            {activeTags.map(tag => (
-                                <span key={tag.id} className="text-[9px] px-1.5 py-px rounded-full text-white font-medium" style={{ backgroundColor: tag.color }}>
-                                    {tag.label}
-                                </span>
-                            ))}
-                        </div>
+                    {isCustomMessage && (
+                        <span className="text-[9px] bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-300 px-1.5 py-0.5 rounded-full font-medium flex items-center gap-0.5">
+                            <PenTool size={8} /> Custom
+                        </span>
                     )}
+                </div>
 
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {formatDate(client.dueDate)}
+                <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                    <span className="text-[11px] text-gray-500 dark:text-slate-400">{formatDate(client.dueDate)}</span>
+                    <span className="text-[9px] font-medium uppercase text-gray-400 dark:text-slate-500 border border-gray-200 dark:border-slate-600 px-1.5 py-px rounded">
+                        {statusText.split('(')[0].trim()}
+                    </span>
+                    {activeTags.map(tag => (
+                        <span key={tag.id} className="text-[9px] px-1.5 py-px rounded-full text-white font-medium" style={{ backgroundColor: tag.color }}>
+                            {tag.label}
+                        </span>
+                    ))}
+                </div>
+
+                {hasLinkedClients && (
+                    <div className="text-[10px] text-blue-500 dark:text-blue-400 flex items-center gap-1 mt-0.5">
+                        <LinkIcon size={9} />
+                        {client.linked!.map(l => l.name).join(', ')}
                     </div>
-                </div>
-                
-                <div className="flex items-center gap-2 mt-4 sm:mt-0">
-                     {/* Mini Template Selector (Collapsed) */}
-                     {(config.templates.additional || []).length > 0 && (
-                        <div className="relative group/tpl" title="Alterar Modelo">
-                             <select 
-                                value={selectedTemplateId}
-                                onChange={(e) => setSelectedTemplateId(e.target.value)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                             >
-                                <option value="auto">Auto</option>
-                                {config.templates.additional?.map(t => (
-                                    <option key={t.id} value={t.id}>{t.label}</option>
-                                ))}
-                             </select>
-                             <div className={`p-1.5 rounded transition-colors ${selectedTemplateId !== 'auto' ? 'text-purple-500 bg-purple-50 dark:bg-purple-900/20' : 'text-gray-300 hover:text-gray-500'}`}>
-                                <List size={16} />
-                             </div>
-                        </div>
-                     )}
+                )}
 
-                     <button 
-                        onClick={() => onLinkClient(client)}
-                        className="p-1.5 rounded text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                        title="Vincular Contas"
-                     >
-                        <LinkIcon size={16} />
-                     </button>
-
-                     <button 
-                        onClick={() => onOpenReceipt(client)} 
-                        disabled={!whatsapp}
-                        className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-orange-500 hover:bg-orange-50 dark:hover:bg-orange-900/20'}`}
-                        title="Gerar Recibo"
-                     >
-                        <FileText size={16} />
-                     </button>
-
-                     <button 
-                        onClick={(e) => { e.stopPropagation(); onEdit(client); }}
-                        className="p-1.5 rounded text-gray-400 hover:text-primary hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
-                        title="Editar"
-                     >
-                        <Edit size={16} />
-                     </button>
-                     <button 
-                        onClick={() => handleAction('whatsapp')} 
-                        disabled={!whatsapp}
-                        className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200' : 'text-gray-400 hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20'}`}
-                     >
-                        <WhatsappIcon size={16} />
-                     </button>
-                </div>
+                {(cleanText || client.customNotes) && (
+                    <div className="text-[10px] text-gray-400 dark:text-slate-500 truncate mt-0.5">
+                        {cleanText && <span><strong className="text-red-500 dark:text-red-400">Obs:</strong> <HighlightedText text={cleanText} query={searchQuery} /></span>}
+                        {client.customNotes && <span className="ml-1.5"><strong className="text-amber-500">Nota:</strong> <HighlightedText text={client.customNotes} query={searchQuery} /></span>}
+                    </div>
+                )}
             </div>
 
-            {(cleanText || client.customNotes) && (
-                <div className="mt-2 pt-2 border-t border-gray-100 dark:border-gray-700/50 flex flex-col gap-1">
-                    {cleanText && (
-                        <div className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
-                            <strong className="text-red-700 dark:text-red-300 mr-1">Obs:</strong>
-                            <HighlightedText text={cleanText} query={searchQuery} />
+            {/* Actions */}
+            <div className="flex items-center gap-0.5 flex-shrink-0">
+                {(config.templates.additional || []).length > 0 && (
+                    <div className="relative" title="Alterar Modelo">
+                        <select
+                            value={selectedTemplateId}
+                            onChange={(e) => setSelectedTemplateId(e.target.value)}
+                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                        >
+                            <option value="auto">Auto</option>
+                            {config.templates.additional?.map(t => (
+                                <option key={t.id} value={t.id}>{t.label}</option>
+                            ))}
+                        </select>
+                        <div className={`p-1.5 rounded transition-colors ${selectedTemplateId !== 'auto' ? 'text-purple-500' : 'text-gray-300 dark:text-slate-600 hover:text-gray-500'}`}>
+                            <List size={15} />
                         </div>
-                    )}
-                    {client.customNotes && (
-                         <div className="text-[11px] text-yellow-600 dark:text-yellow-400 truncate">
-                            <strong className="text-yellow-700 dark:text-yellow-300 mr-1">Nota:</strong>
-                            <HighlightedText text={client.customNotes} query={searchQuery} />
-                         </div>
-                    )}
-                </div>
-            )}
+                    </div>
+                )}
+                <button onClick={() => onLinkClient(client)} className="p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors" title="Vincular">
+                    <LinkIcon size={15} />
+                </button>
+                <button onClick={() => onOpenReceipt(client)} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-300 dark:text-slate-600 hover:text-orange-500 dark:hover:text-orange-400'}`} title="Recibo">
+                    <FileText size={15} />
+                </button>
+                <button onClick={(e) => { e.stopPropagation(); onEdit(client); }} className="p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-primary dark:hover:text-emerald-400 transition-colors" title="Editar">
+                    <Edit size={15} />
+                </button>
+                <button onClick={() => handleAction('whatsapp')} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-100'}`} title="WhatsApp">
+                    <WhatsappIcon size={15} />
+                </button>
+                <button onClick={() => setIsCollapsed(false)} className="p-1.5 rounded text-gray-200 dark:text-slate-600 hover:text-gray-500 dark:hover:text-slate-400 transition-colors">
+                    <ChevronDown size={14} />
+                </button>
+            </div>
         </div>
       ) : (
         // --- EXPANDED / FOCUS STATE ---
@@ -539,7 +535,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
                     </div>
                 )}
 
-                <div className={`mb-4 p-4 rounded-lg border select-text shadow-inner overflow-y-auto ${isFocusMode ? 'text-sm sm:text-base max-h-[30vh] sm:max-h-[40vh]' : ''} ${isCustomMessage ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-900/30' : 'bg-gray-50 dark:bg-gray-800/50 border-gray-100 dark:border-gray-700/50'}`}>
+                <div className={`mb-4 p-4 rounded-lg border select-text shadow-inner overflow-y-auto ${isFocusMode ? 'text-sm sm:text-base max-h-[30vh] sm:max-h-[40vh]' : ''} ${isCustomMessage ? 'bg-purple-50 dark:bg-purple-900/10 border-purple-100 dark:border-purple-900/30' : 'bg-gray-50 dark:bg-slate-900/50 border-gray-100 dark:border-slate-700/40'}`}>
                     {renderMessagePreview()}
                 </div>
 
@@ -577,7 +573,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
             </div>
 
             {/* ACTION BAR */}
-            <div className={`flex flex-row items-center gap-1 sm:gap-2 p-1 sm:p-2 bg-gray-50/80 dark:bg-gray-800/80 border-t border-gray-100 dark:border-gray-700 backdrop-blur-sm ${isFocusMode ? 'justify-center py-4' : 'md:flex-col md:border-t-0 md:border-l md:w-14 md:justify-start'}`}>
+            <div className={`flex flex-row items-center gap-1 sm:gap-2 p-1 sm:p-2 bg-gray-50/80 dark:bg-slate-900/60 border-t border-gray-100 dark:border-slate-700/40 backdrop-blur-sm ${isFocusMode ? 'justify-center py-4' : 'md:flex-col md:border-t-0 md:border-l md:w-14 md:justify-start'}`}>
                 
                 {/* Template Selector */}
                 {(config.templates.additional || []).length > 0 && (
@@ -602,38 +598,38 @@ const ClientCard: React.FC<ClientCardProps> = ({
 
                 <div className={`w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1 ${isFocusMode ? 'block' : 'hidden md:block md:w-6 md:h-px md:mx-0 md:my-1'}`} />
 
-                <button 
+                <button
                     onClick={() => onLinkClient(client)}
-                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-blue-600 transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-gray-700' : ''}`}
+                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-blue-600 transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-slate-700' : ''}`}
                     title="Vincular Contas"
                 >
                     <LinkIcon size={16} />
                 </button>
 
-                <button 
-                    onClick={() => onOpenReceipt(client)} 
+                <button
+                    onClick={() => onOpenReceipt(client)}
                     disabled={!whatsapp}
-                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-orange-500 transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-gray-700 text-orange-600' : ''}`}
+                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-orange-500 transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-slate-700 text-orange-600' : ''}`}
                     title="Gerar Recibo e Enviar"
                 >
                     <FileText size={16} />
                 </button>
 
-                <button 
-                    onClick={() => onEdit(client)} 
-                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-primary transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-gray-700' : ''}`} 
+                <button
+                    onClick={() => onEdit(client)}
+                    className={`p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-primary transition-all ${isFocusMode ? 'px-2 sm:px-4 bg-white dark:bg-slate-700' : ''}`}
                     title="Editar Cliente"
                 >
                     <Edit size={16} />
                 </button>
 
                 {!isFocusMode && (
-                    <button onClick={() => onCopy(message)} className="p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-gray-800 transition-all" title="Copiar (Sem Spin)">
+                    <button onClick={() => onCopy(message)} className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-gray-800 transition-all" title="Copiar (Sem Spin)">
                     <Copy size={16} />
                     </button>
                 )}
 
-                <button onClick={() => handleAction('copy')} className={`p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-blue-600 transition-all relative ${isFocusMode ? 'px-3 sm:px-6 bg-white dark:bg-gray-700' : ''}`} title="Copiar (Com Spin)">
+                <button onClick={() => handleAction('copy')} className={`p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-blue-600 transition-all relative ${isFocusMode ? 'px-3 sm:px-6 bg-white dark:bg-slate-700' : ''}`} title="Copiar (Com Spin)">
                 <div className="relative flex items-center gap-2">
                     <Copy size={16} />
                     {isFocusMode && <span className="font-bold hidden sm:inline">Copiar</span>}
@@ -642,10 +638,10 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 </button>
                 
                 {!isFocusMode && (
-                    <button 
-                    onClick={() => onCopy(originalPhone || 'Sem telefone')} 
+                    <button
+                    onClick={() => onCopy(originalPhone || 'Sem telefone')}
                     disabled={!originalPhone}
-                    className={`p-2 rounded-lg shadow-sm hover:shadow transition-all ${!originalPhone ? 'opacity-30 cursor-not-allowed text-gray-400' : 'hover:bg-white dark:hover:bg-gray-700 text-gray-500 hover:text-indigo-600'}`} 
+                    className={`p-2 rounded-lg shadow-sm hover:shadow transition-all ${!originalPhone ? 'opacity-30 cursor-not-allowed text-gray-400' : 'hover:bg-white dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-indigo-600'}`}
                     title="Copiar Tel"
                     >
                     <Phone size={16} />
@@ -655,7 +651,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 <button 
                 onClick={() => handleAction('whatsapp')} 
                 disabled={!whatsapp}
-                className={`p-2 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-2 ${!whatsapp ? 'opacity-30 cursor-not-allowed text-gray-400' : 'hover:bg-white dark:hover:bg-gray-700 text-gray-500 hover:text-green-500'} ${isFocusMode ? 'px-4 sm:px-8 bg-green-500 text-white hover:bg-green-600 hover:text-white shadow-md' : ''}`} 
+                className={`p-2 rounded-lg shadow-sm hover:shadow transition-all flex items-center gap-2 ${!whatsapp ? 'opacity-30 cursor-not-allowed text-gray-400' : 'hover:bg-white dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-white'} ${isFocusMode ? 'px-4 sm:px-8 bg-slate-700 text-white hover:bg-slate-600 hover:text-white shadow-md' : ''}`} 
                 title="WhatsApp"
                 >
                 <WhatsappIcon size={isFocusMode ? 20 : 16} />
@@ -663,7 +659,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 </button>
 
                 {!isFocusMode && (
-                    <button onClick={() => onCopy(client.name)} className="p-2 rounded-lg hover:bg-white dark:hover:bg-gray-700 shadow-sm hover:shadow text-gray-500 hover:text-orange-500 transition-all" title="Copiar Nome">
+                    <button onClick={() => onCopy(client.name)} className="p-2 rounded-lg hover:bg-white dark:hover:bg-slate-700 shadow-sm hover:shadow text-gray-500 dark:text-slate-400 hover:text-orange-500 transition-all" title="Copiar Nome">
                         <ExternalLink size={16} />
                     </button>
                 )}
