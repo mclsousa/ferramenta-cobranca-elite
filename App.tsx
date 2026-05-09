@@ -722,7 +722,7 @@ function App() {
         {/* ── SIDEBAR ── */}
         <aside className={`
           fixed md:relative inset-y-0 left-0 z-50
-          w-72 md:w-64 flex-shrink-0
+          w-[85vw] max-w-sm md:w-80 flex-shrink-0
           bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800
           flex flex-col overflow-hidden
           transition-transform duration-300 ease-in-out
