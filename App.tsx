@@ -932,13 +932,12 @@ function App() {
                 <CalendarCheck size={13} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
-              <div className="flex gap-1.5 items-end">
-                <div className="flex-1">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
                   <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
-                <span className="text-gray-400 dark:text-slate-600 pb-2.5 flex-shrink-0">→</span>
-                <div className="flex-1">
+                <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
                   <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
@@ -963,13 +962,12 @@ function App() {
               <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 dark:text-red-400 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
                 <History size={13} /> Vencidos (4-5 dias)
               </button>
-              <div className="flex gap-1.5 items-end">
-                <div className="flex-1">
+              <div className="grid grid-cols-2 gap-2">
+                <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
                   <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
-                <span className="text-gray-400 dark:text-slate-600 pb-2.5 flex-shrink-0">→</span>
-                <div className="flex-1">
+                <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
                   <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
