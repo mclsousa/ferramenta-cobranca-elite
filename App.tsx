@@ -930,8 +930,8 @@ function App() {
             {/* Filtro principal */}
             <div className="space-y-3">
               <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Filtro</span>
-              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
-                <CalendarCheck size={16} />
+              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <CalendarCheck size={13} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
               <div className="flex gap-1.5 items-end overflow-hidden">
@@ -946,11 +946,11 @@ function App() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/20">
-                  <Filter size={15} /> Processar
+                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-900/20">
+                  <Filter size={13} /> Processar
                 </button>
-                <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-3 px-3.5 rounded-xl transition-all" title="Limpar">
-                  <Trash2 size={16} />
+                <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-2.5 px-3 rounded-xl transition-all" title="Limpar">
+                  <Trash2 size={13} />
                 </button>
               </div>
             </div>
@@ -962,8 +962,8 @@ function App() {
               <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
                 <CalendarX size={14} className="text-red-500" /> Vencidos
               </span>
-              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/20 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
-                <History size={16} /> Vencidos (4-5 dias)
+              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/20 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
+                <History size={13} /> Vencidos (4-5 dias)
               </button>
               <div className="flex gap-1.5 items-end overflow-hidden">
                 <div className="flex-1 min-w-0">
@@ -976,25 +976,23 @@ function App() {
                   <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
-              <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-3 px-4 rounded-xl text-sm font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-2 shadow-lg shadow-red-900/20">
-                <Search size={15} /> Filtrar Vencidos
+              <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/20">
+                <Search size={13} /> Filtrar Vencidos
               </button>
             </div>
 
-          </div>
+            <div className="flex gap-2">
+              <button onClick={() => setIsDatabaseOpen(true)} className="flex-1 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                <Database size={13} /> Banco
+                {clientDatabase.length > 0 && (
+                  <span className="bg-gray-400 dark:bg-slate-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">{clientDatabase.length}</span>
+                )}
+              </button>
+              <button onClick={() => setIsConfigOpen(true)} className="flex-1 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                <Settings size={13} /> Config
+              </button>
+            </div>
 
-          {/* Footer da sidebar */}
-          <div className="flex-shrink-0 border-t border-gray-200 dark:border-slate-800 p-4 space-y-2">
-            <button onClick={() => setIsDatabaseOpen(true)} className="w-full bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2">
-              <Database size={16} />
-              Banco de Clientes
-              {clientDatabase.length > 0 && (
-                <span className="bg-blue-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{clientDatabase.length}</span>
-              )}
-            </button>
-            <button onClick={() => setIsConfigOpen(true)} className="w-full bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-600 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-200 py-3 px-4 rounded-xl text-sm font-medium transition-all flex items-center justify-center gap-2">
-              <Settings size={16} /> Configurações
-            </button>
           </div>
         </aside>
 
