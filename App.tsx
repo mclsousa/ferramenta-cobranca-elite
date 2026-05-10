@@ -932,15 +932,15 @@ function App() {
                 <CalendarCheck size={13} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
-              <div className="flex gap-1.5 items-end overflow-hidden">
-                <div className="flex-1 min-w-0">
+              <div className="flex gap-1.5 items-end">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
-                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
                 <span className="text-gray-400 dark:text-slate-600 pb-2.5 flex-shrink-0">→</span>
-                <div className="flex-1 min-w-0">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
-                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <div className="flex gap-2">
@@ -1017,39 +1017,14 @@ function App() {
           ) : resultViewMode !== 'focus' ? (
             <div className="p-3 sm:p-6 animate-fade-in-up">
               {/* Dashboard + Toolbar unificados */}
-              <div className="grid grid-cols-3 items-center bg-white dark:bg-slate-800 rounded-xl mb-5 overflow-hidden">
-                {/* Esquerda: Título */}
-                <div className="flex items-center border-r border-gray-100 dark:border-slate-700">
-                  <div className="px-4 py-2.5 min-w-0 flex-1">
+              {/* Mobile: empilhado; Desktop: grid 3 colunas */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl mb-5 overflow-hidden">
+                {/* Linha 1 mobile: Título + Pesquisar + CSV */}
+                <div className="flex items-center divide-x divide-gray-100 dark:divide-slate-700 border-b border-gray-100 dark:border-slate-700 sm:border-b-0">
+                  <div className="px-3 py-2.5 min-w-0 flex-1">
                     <h2 className="text-xs font-bold text-gray-500 dark:text-slate-400 truncate">{resultTitle}</h2>
                   </div>
-                </div>
-                {/* Centro: Stats */}
-                <div className="flex items-center justify-center divide-x divide-gray-100 dark:divide-slate-700">
-                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
-                    <Users size={12} className="text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-xs text-gray-500 dark:text-slate-400">Clientes</span>
-                    <span className="text-xs font-bold text-gray-900 dark:text-white">{dashboardStats.total}</span>
-                  </div>
-                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
-                    <CalendarCheck size={12} className="text-amber-500 dark:text-amber-400" />
-                    <span className="text-xs text-gray-500 dark:text-slate-400">Hoje</span>
-                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{dashboardStats.today}</span>
-                  </div>
-                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
-                    <AlertTriangle size={12} className="text-red-500 dark:text-red-400" />
-                    <span className="text-xs text-gray-500 dark:text-slate-400">Vencidos</span>
-                    <span className="text-xs font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</span>
-                  </div>
-                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
-                    <CheckCircle size={12} className="text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-xs text-gray-500 dark:text-slate-400">Recebido</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : '—'}</span>
-                  </div>
-                </div>
-                {/* Direita: Pesquisar + CSV */}
-                <div className="flex items-center justify-end divide-x divide-gray-100 dark:divide-slate-700 border-l border-gray-100 dark:border-slate-700">
-                  <div className="px-3 py-1.5 flex-shrink-0">
+                  <div className="px-2 py-1.5 flex-shrink-0">
                     <div className="relative">
                       <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={12} />
                       <input type="text" placeholder="Pesquisar..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-7 pr-2 py-1.5 w-24 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs placeholder-gray-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none" />
@@ -1058,6 +1033,29 @@ function App() {
                   <button onClick={handleExport} className="px-3 py-2.5 flex items-center gap-1.5 text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-slate-300 transition-colors text-xs flex-shrink-0">
                     <Download size={13} /> CSV
                   </button>
+                </div>
+                {/* Linha 2: Stats sempre em linha horizontal com scroll se necessário */}
+                <div className="flex items-center divide-x divide-gray-100 dark:divide-slate-700 overflow-x-auto">
+                  <div className="px-3 py-2 flex items-center gap-1.5 flex-shrink-0">
+                    <Users size={12} className="text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Clientes</span>
+                    <span className="text-xs font-bold text-gray-900 dark:text-white">{dashboardStats.total}</span>
+                  </div>
+                  <div className="px-3 py-2 flex items-center gap-1.5 flex-shrink-0">
+                    <CalendarCheck size={12} className="text-amber-500 dark:text-amber-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Hoje</span>
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{dashboardStats.today}</span>
+                  </div>
+                  <div className="px-3 py-2 flex items-center gap-1.5 flex-shrink-0">
+                    <AlertTriangle size={12} className="text-red-500 dark:text-red-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Vencidos</span>
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</span>
+                  </div>
+                  <div className="px-3 py-2 flex items-center gap-1.5 flex-shrink-0">
+                    <CheckCircle size={12} className="text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Recebido</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : '—'}</span>
+                  </div>
                 </div>
               </div>
 
