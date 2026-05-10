@@ -4,6 +4,7 @@ export interface ParsedClient {
   name: string;
   dueDate: Date;
   rawNotes: string;
+  originalLine: string;
   customNotes?: string;
   customMessage?: string; // Nova funcionalidade: Mensagem personalizada
   tags?: string[]; // Array of Tag IDs
@@ -106,7 +107,9 @@ export interface PaymentRecord {
 export interface StoredClient {
   id: string;
   name: string;
+  dueDate: string;
   rawNotes: string;
+  originalLine: string;
   type: 'iptv' | 'p2p';
   savedAt: number; // timestamp
 }

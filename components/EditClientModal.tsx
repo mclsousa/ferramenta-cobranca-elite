@@ -246,9 +246,9 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
             <button 
                 type="submit"
                 form="edit-form"
-                className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-medium transition-all shadow-md active:scale-95"
+                className="w-full flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.97]"
             >
-                <Save size={18} />
+                <Save size={13} />
                 Salvar Alterações
             </button>
         </div>

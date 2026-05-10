@@ -35,7 +35,7 @@ export const parseClientData = (text: string, forceP2PCheck: boolean = false): P
   let invalidLinesCount = 0;
 
   // State for split-line parsing
-  let pendingPartial: { name: string } | null = null;
+  let pendingPartial: { name: string; headerLine: string } | null = null;
 
   lines.forEach((line) => {
     const trimmedLine = line.trim();
@@ -70,6 +70,7 @@ export const parseClientData = (text: string, forceP2PCheck: boolean = false): P
                     name: pendingPartial.name,
                     dueDate: dueDate,
                     rawNotes: rawNotes,
+                    originalLine: pendingPartial.headerLine + '\n' + line,
                     type: 'iptv' // Assumed IPTV for split lines usually
                 });
                 matched = true;
@@ -104,11 +105,12 @@ export const parseClientData = (text: string, forceP2PCheck: boolean = false): P
                     name: name,
                     dueDate: dueDate,
                     rawNotes: rawNotes,
+                    originalLine: line,
                     type: 'p2p' // Heuristic
                 });
                 matched = true;
             }
-        } 
+        }
         // Fallback for lines with only ONE date (Standard IPTV sometimes)
         // Structure: ... [Due Date] [Notes]
         else if (nameMatch && dateMatches.length === 1) {
@@ -125,6 +127,7 @@ export const parseClientData = (text: string, forceP2PCheck: boolean = false): P
                     name: name,
                     dueDate: dueDate,
                     rawNotes: rawNotes,
+                    originalLine: line,
                     type: 'iptv'
                 });
                 matched = true;
@@ -137,7 +140,7 @@ export const parseClientData = (text: string, forceP2PCheck: boolean = false): P
     if (!matched && !pendingPartial) {
         const splitMatch = line.match(SPLIT_HEADER);
         if (splitMatch) {
-            pendingPartial = { name: splitMatch[2] };
+            pendingPartial = { name: splitMatch[2], headerLine: line };
             matched = true;
         }
     }

@@ -7,7 +7,7 @@ interface DatabaseModalProps {
   isOpen: boolean;
   onClose: () => void;
   clients: StoredClient[];
-  onLoad: (rawNotes: string) => void;
+  onLoad: (clients: StoredClient[]) => void;
   onRemove: (id: string) => void;
   onClearAll: () => void;
 }
@@ -25,13 +25,12 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
   if (!isOpen) return null;
 
   const handleLoadAll = () => {
-    const raw = filtered.map(c => c.rawNotes).join('\n');
-    onLoad(raw);
+    onLoad(filtered);
     onClose();
   };
 
   const handleLoadOne = (c: StoredClient) => {
-    onLoad(c.rawNotes);
+    onLoad([c]);
     onClose();
   };
 

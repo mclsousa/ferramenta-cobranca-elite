@@ -72,13 +72,13 @@ const LinkClientsModal: React.FC<LinkClientsModalProps> = ({ isOpen, onClose, ma
         {/* Search */}
         <div className="p-4 border-b border-gray-100 dark:border-gray-700">
           <div className="relative">
-             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-             <input 
-                type="text" 
-                placeholder="Buscar dependente..." 
+             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={14} />
+             <input
+                type="text"
+                placeholder="Buscar dependente..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-9 p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 focus:ring-1 focus:ring-blue-500 outline-none text-sm"
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 text-xs outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-400 dark:placeholder-slate-500"
              />
           </div>
         </div>
@@ -122,9 +122,9 @@ const LinkClientsModal: React.FC<LinkClientsModalProps> = ({ isOpen, onClose, ma
             </div>
             <button 
                 onClick={handleSave}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg text-sm font-bold transition-all shadow-md active:scale-95"
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-[0.97]"
             >
-                <LinkIcon size={16} /> Salvar Vínculos
+                <LinkIcon size={13} /> Salvar Vínculos
             </button>
         </div>
 

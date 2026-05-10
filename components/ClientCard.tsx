@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { ParsedClient, AppConfig, ResultViewMode } from '../types';
 import { extractPhone, padZero, formatDate, processSpinSyntax, applyAntiBan, extractCredentials } from '../utils/helpers';
-import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, DollarSign, Bell } from 'lucide-react';
+import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, DollarSign, Bell, Cast } from 'lucide-react';
 
 interface ClientCardProps {
   client: ParsedClient;
@@ -35,25 +35,6 @@ const WhatsappIcon = ({ size = 16, className }: { size?: number, className?: str
     </svg>
 );
 
-const SignalBars = ({ active, color, size = 22 }: { active: number; color: string; size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
-    {[1, 2, 3, 4].map(bar => {
-      const h = bar * 4;
-      return (
-        <rect
-          key={bar}
-          x={(bar - 1) * 4}
-          y={16 - h}
-          width={3}
-          height={h}
-          rx={1}
-          fill={color}
-          opacity={bar <= active ? 1 : 0.25}
-        />
-      );
-    })}
-  </svg>
-);
 
 const getInitials = (name: string) => {
   const parts = name.trim().split(/\s+/);
@@ -342,7 +323,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
         >
             {/* Sinal de status */}
             <div className="flex-shrink-0 flex items-center justify-center w-8">
-                <SignalBars active={activeBars} color={barColor} size={22} />
+                <Cast size={20} style={{ color: barColor }} />
             </div>
 
             {/* Info */}
@@ -441,7 +422,7 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 onClick={() => setIsCollapsed(true)}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <SignalBars active={activeBars} color={barColor} size={18} />
+                  <Cast size={16} style={{ color: barColor }} />
                   <span className="text-[10px] text-gray-400 dark:text-slate-500">{statusText.split('(')[0].trim()}</span>
                 </div>
                 <ChevronUp size={14} className="text-gray-400 dark:text-slate-500 flex-shrink-0" />

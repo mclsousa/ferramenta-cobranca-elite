@@ -717,33 +717,41 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                     </button>
                  </div>
 
-                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                      {(localConfig.tags || []).map((tag) => (
-                         <div key={tag.id} className="flex items-center gap-2 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-slate-700">
-                             <input 
-                                type="color" 
-                                value={tag.color}
-                                onChange={(e) => handleUpdateTag(tag.id, 'color', e.target.value)}
-                                className="w-8 h-8 rounded cursor-pointer border-none p-0 bg-transparent"
-                             />
-                             <input 
+                         <div key={tag.id} className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-slate-700 overflow-hidden relative">
+                             <div className="absolute left-0 top-0 bottom-0 w-1 rounded-l-xl flex-shrink-0" style={{ backgroundColor: tag.color }} />
+                             <label className="ml-1 cursor-pointer flex-shrink-0 relative" title="Alterar cor">
+                                 <Tag size={18} style={{ color: tag.color }} />
+                                 <input
+                                    type="color"
+                                    value={tag.color}
+                                    onChange={(e) => handleUpdateTag(tag.id, 'color', e.target.value)}
+                                    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                 />
+                             </label>
+                             <input
                                 type="text"
                                 value={tag.label}
                                 onChange={(e) => handleUpdateTag(tag.id, 'label', e.target.value)}
-                                className="flex-1 text-sm font-medium bg-transparent border-none focus:ring-0 text-gray-800 dark:text-white"
+                                className="flex-1 text-xs font-semibold bg-transparent border-none focus:ring-0 text-gray-800 dark:text-white outline-none min-w-0"
                                 placeholder="Nome da Tag"
                              />
-                             <button 
+                             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{ backgroundColor: tag.color + '22', color: tag.color }}>
+                                 {tag.label || 'Tag'}
+                             </span>
+                             <button
                                 onClick={() => handleDeleteTag(tag.id)}
-                                className="p-1.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
+                                className="p-1.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
                              >
-                                <Trash2 size={16} />
+                                <Trash2 size={13} />
                              </button>
                          </div>
                      ))}
                      {(localConfig.tags || []).length === 0 && (
-                         <div className="col-span-full text-center py-8 text-gray-400 italic bg-gray-50 dark:bg-gray-800/50 rounded-lg">
-                             Nenhuma etiqueta criada.
+                         <div className="col-span-full text-center py-10 text-gray-400 dark:text-slate-600 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-gray-200 dark:border-slate-700">
+                             <Tag size={24} className="mx-auto mb-2 opacity-30" />
+                             <p className="text-xs">Nenhuma etiqueta criada.</p>
                          </div>
                      )}
                  </div>

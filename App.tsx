@@ -749,23 +749,26 @@ function App() {
         .map(c => ({
           id: crypto.randomUUID(),
           name: c.name,
+          dueDate: c.dueDate instanceof Date ? c.dueDate.toISOString() : String(c.dueDate),
           rawNotes: c.rawNotes,
+          originalLine: c.originalLine || '',
           type: c.type,
           savedAt: Date.now(),
         }));
-      // Atualiza data de clientes já existentes
       const updated = prev.map(stored => {
         const match = parsed.find(c => c.name.toLowerCase() === stored.name.toLowerCase());
-        return match ? { ...stored, rawNotes: match.rawNotes, savedAt: Date.now() } : stored;
+        const newDueDate = match ? (match.dueDate instanceof Date ? match.dueDate.toISOString() : String(match.dueDate)) : stored.dueDate;
+        return match ? { ...stored, dueDate: newDueDate, rawNotes: match.rawNotes, originalLine: match.originalLine || stored.originalLine || '', savedAt: Date.now() } : stored;
       });
       return [...updated, ...newEntries];
     });
   };
 
-  const handleLoadFromDatabase = (rawNotes: string) => {
+  const handleLoadFromDatabase = (clients: StoredClient[]) => {
+    const lines = clients.map(c => c.originalLine || c.name).join('\n');
     setInputData(prev => {
       const clean = prev.trim();
-      return clean ? clean + '\n' + rawNotes : rawNotes;
+      return clean ? clean + '\n' + lines : lines;
     });
     addToast('Clientes carregados no painel', 'success');
   };
@@ -789,7 +792,7 @@ function App() {
       fired: false,
     };
     setReminders(prev => {
-      const withoutOld = prev.filter(r => r.clientId !== client.id);
+      const withoutOld = prev.filter(r => r.clientName.toLowerCase() !== client.name.toLowerCase());
       return [...withoutOld, reminder];
     });
     const delay = scheduledFor - Date.now();
@@ -1060,7 +1063,7 @@ function App() {
               {/* Cards */}
               <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
                 {getFilteredResults().length > 0 ? getFilteredResults().map((client) => (
-                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} isPaid={payments.some(p => p.clientId === client.id && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientId === client.id && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
+                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} isPaid={payments.some(p => p.clientName.toLowerCase() === client.name.toLowerCase() && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientName.toLowerCase() === client.name.toLowerCase() && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
                 )) : (
                   <div className="text-center py-16 text-gray-500 dark:text-slate-600 bg-white dark:bg-slate-800/30 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
                     <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
@@ -1094,7 +1097,7 @@ function App() {
           </div>
           <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
             <div className="w-full max-w-2xl h-full flex flex-col justify-center">
-              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} isPaid={payments.some(p => p.clientId === getFilteredResults()[focusIndex].id && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientId === getFilteredResults()[focusIndex].id && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
+              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} isPaid={payments.some(p => p.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
             </div>
           </div>
           <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
