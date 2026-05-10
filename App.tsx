@@ -935,11 +935,11 @@ function App() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
-                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
-                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <div className="flex gap-2">
@@ -965,11 +965,11 @@ function App() {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
-                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
-                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-xs outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/20">
