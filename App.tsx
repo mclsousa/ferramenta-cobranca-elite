@@ -832,35 +832,33 @@ function App() {
             <Users size={16} />
           </div>
           <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-            Cobrança <span className="text-emerald-500 dark:text-emerald-400">Elite</span>
+            Cobrança <span className="text-emerald-600 dark:text-emerald-400">Elite</span>
           </h1>
         </div>
 
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
           {results.length > 0 && resultViewMode !== 'focus' && (
             <>
-              <button onClick={() => setIsLinksOpen(true)} className="hidden sm:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors" title="Links Rápidos">
-                <LinkIcon size={17} />
+              <button onClick={() => setIsLinksOpen(true)} className="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-emerald-600 dark:text-emerald-400 px-3 py-2.5 rounded-xl transition-colors text-xs" title="Links Rápidos">
+                <LinkIcon size={13} /> <span className="hidden sm:inline">Links</span>
               </button>
-              <button onClick={() => setIsHistoryOpen(true)} className="hidden sm:flex p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-100 transition-colors relative" title="Histórico">
-                <History size={17} />
-                {actionHistory.length > 0 && <span className="absolute top-0.5 right-0.5 w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>}
+              <button onClick={() => setIsHistoryOpen(true)} className="hidden sm:flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors text-xs relative" title="Histórico">
+                <History size={13} /> <span className="hidden sm:inline">Histórico</span>
+                {actionHistory.length > 0 && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>}
               </button>
-              <div className="hidden sm:block w-px h-5 bg-gray-200 dark:bg-slate-700 mx-0.5" />
-              <button onClick={() => startFocusMode(true)} className="flex items-center gap-1.5 bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-amber-500/20" title="Fila">
+              <button onClick={() => startFocusMode(true)} className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors text-xs" title="Fila">
                 <Rocket size={13} /> <span className="hidden sm:inline">Fila</span>
               </button>
-              <button onClick={() => startFocusMode(false)} className="flex items-center gap-1.5 bg-violet-600 hover:bg-violet-500 text-white px-2 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-lg shadow-violet-900/30 active:scale-95" title="Foco">
+              <button onClick={() => startFocusMode(false)} className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors text-xs" title="Foco">
                 <Play size={13} fill="currentColor" /> <span className="hidden sm:inline">Foco</span>
               </button>
-              <div className="flex bg-gray-100 dark:bg-slate-800 rounded-lg p-0.5 border border-gray-200 dark:border-slate-700">
-                <button onClick={() => setResultViewMode('grid')} className={`p-1.5 rounded transition-all ${resultViewMode === 'grid' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`} title="Grade"><LayoutGrid size={15} /></button>
-                <button onClick={() => setResultViewMode('list')} className={`p-1.5 rounded transition-all ${resultViewMode === 'list' ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-emerald-400 shadow-sm' : 'text-gray-400 dark:text-slate-500 hover:text-gray-600 dark:hover:text-slate-300'}`} title="Lista"><LayoutList size={15} /></button>
-              </div>
+              <button onClick={() => setResultViewMode(resultViewMode === 'grid' ? 'list' : 'grid')} className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors text-xs" title="Alternar visualização">
+                {resultViewMode === 'grid' ? <LayoutList size={13} /> : <LayoutGrid size={13} />}
+              </button>
             </>
           )}
-          <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-500 hover:text-gray-800 dark:hover:text-slate-300 transition-colors" title={isDarkMode ? 'Modo claro' : 'Modo escuro'}>
-            {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
+          <button onClick={() => setIsDarkMode(!isDarkMode)} className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors text-xs" title={isDarkMode ? 'Modo claro' : 'Modo escuro'}>
+            {isDarkMode ? <Sun size={13} /> : <Moon size={13} />}
           </button>
         </div>
       </header>
@@ -930,7 +928,7 @@ function App() {
             {/* Filtro principal */}
             <div className="space-y-3">
               <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Filtro</span>
-              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 border border-emerald-600/20 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
+              <button onClick={() => { handleFilterUpcoming(); setIsSidebarOpen(false); }} className="w-full bg-emerald-600/10 hover:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
                 <CalendarCheck size={13} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
@@ -946,7 +944,7 @@ function App() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-900/20">
+                <button onClick={() => { processData(unifiedDates, false); setIsSidebarOpen(false); }} className="flex-1 bg-emerald-600 hover:bg-emerald-600 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-emerald-900/20">
                   <Filter size={13} /> Processar
                 </button>
                 <button onClick={() => { setInputData(''); setUnifiedDates({start:'',end:''}); setResults([]); setFlatResults([]); addToast('Limpo','info'); }} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 py-2.5 px-3 rounded-xl transition-all" title="Limpar">
@@ -962,7 +960,7 @@ function App() {
               <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest flex items-center gap-2">
                 <CalendarX size={14} className="text-red-500" /> Vencidos
               </span>
-              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/20 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 active:scale-[0.98]">
+              <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 dark:text-red-400 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5">
                 <History size={13} /> Vencidos (4-5 dias)
               </button>
               <div className="flex gap-1.5 items-end overflow-hidden">
@@ -1010,7 +1008,7 @@ function App() {
                   <p className="text-gray-500 dark:text-slate-500 text-sm mt-1 hidden md:block">Cole a lista no painel e clique em <span className="text-emerald-600 dark:text-emerald-400 font-medium">Processar</span></p>
                 </div>
                 <div className="flex items-center justify-center gap-4 text-xs text-gray-400 dark:text-slate-600">
-                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500" /> IPTV</span>
+                  <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-600" /> IPTV</span>
                   <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-violet-500" /> P2P</span>
                   <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500" /> CSV</span>
                 </div>
@@ -1018,37 +1016,46 @@ function App() {
             </div>
           ) : resultViewMode !== 'focus' ? (
             <div className="p-3 sm:p-6 animate-fade-in-up">
-              {/* Dashboard */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 mb-5 sm:mb-6">
-                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
-                  <div className="flex items-center gap-1.5 mb-1.5"><Users size={13} className="text-emerald-500 dark:text-emerald-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Clientes</span></div>
-                  <div className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">{dashboardStats.total}</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
-                  <div className="flex items-center gap-1.5 mb-1.5"><CalendarCheck size={13} className="text-amber-500 dark:text-amber-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Hoje</span></div>
-                  <div className="text-xl sm:text-2xl font-bold text-amber-600 dark:text-amber-400">{dashboardStats.today}</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
-                  <div className="flex items-center gap-1.5 mb-1.5"><AlertTriangle size={13} className="text-red-500 dark:text-red-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Vencidos</span></div>
-                  <div className="text-xl sm:text-2xl font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</div>
-                </div>
-                <div className="bg-white dark:bg-slate-800/60 p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-slate-700/40 shadow-sm">
-                  <div className="flex items-center gap-1.5 mb-1.5"><CheckCircle size={13} className="text-emerald-500 dark:text-emerald-400" /><span className="text-[9px] sm:text-[10px] font-bold text-gray-500 dark:text-slate-500 uppercase tracking-wider">Recebido</span></div>
-                  <div className="text-lg sm:text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                    {todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : <span className="text-gray-400 dark:text-slate-600 text-base">—</span>}
+              {/* Dashboard + Toolbar unificados */}
+              <div className="grid grid-cols-3 items-center bg-white dark:bg-slate-800 rounded-xl mb-5 overflow-hidden">
+                {/* Esquerda: Título */}
+                <div className="flex items-center border-r border-gray-100 dark:border-slate-700">
+                  <div className="px-4 py-2.5 min-w-0 flex-1">
+                    <h2 className="text-xs font-bold text-gray-500 dark:text-slate-400 truncate">{resultTitle}</h2>
                   </div>
                 </div>
-              </div>
-
-              {/* Toolbar resultados */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-5">
-                <h2 className="text-sm font-bold text-gray-700 dark:text-slate-300">{resultTitle}</h2>
-                <div className="flex gap-2">
-                  <div className="relative flex-1 sm:flex-none">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={13} />
-                    <input type="text" placeholder="Pesquisar..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-8 pr-3 py-2 w-full sm:w-44 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-800 dark:text-slate-100 text-sm placeholder-gray-400 dark:placeholder-slate-600 focus:ring-1 focus:ring-emerald-500 outline-none" />
+                {/* Centro: Stats */}
+                <div className="flex items-center justify-center divide-x divide-gray-100 dark:divide-slate-700">
+                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
+                    <Users size={12} className="text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Clientes</span>
+                    <span className="text-xs font-bold text-gray-900 dark:text-white">{dashboardStats.total}</span>
                   </div>
-                  <button onClick={handleExport} className="flex items-center gap-1.5 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200 px-3 py-2 rounded-lg transition-all text-xs font-medium flex-shrink-0">
+                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
+                    <CalendarCheck size={12} className="text-amber-500 dark:text-amber-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Hoje</span>
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400">{dashboardStats.today}</span>
+                  </div>
+                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
+                    <AlertTriangle size={12} className="text-red-500 dark:text-red-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Vencidos</span>
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</span>
+                  </div>
+                  <div className="px-3 py-2.5 flex items-center gap-1.5 flex-shrink-0">
+                    <CheckCircle size={12} className="text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-xs text-gray-500 dark:text-slate-400">Recebido</span>
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : '—'}</span>
+                  </div>
+                </div>
+                {/* Direita: Pesquisar + CSV */}
+                <div className="flex items-center justify-end divide-x divide-gray-100 dark:divide-slate-700 border-l border-gray-100 dark:border-slate-700">
+                  <div className="px-3 py-1.5 flex-shrink-0">
+                    <div className="relative">
+                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500" size={12} />
+                      <input type="text" placeholder="Pesquisar..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="pl-7 pr-2 py-1.5 w-24 rounded-lg bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 text-xs placeholder-gray-400 dark:placeholder-slate-500 focus:ring-2 focus:ring-emerald-500 outline-none" />
+                    </div>
+                  </div>
+                  <button onClick={handleExport} className="px-3 py-2.5 flex items-center gap-1.5 text-gray-400 dark:text-slate-500 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-gray-600 dark:hover:text-slate-300 transition-colors text-xs flex-shrink-0">
                     <Download size={13} /> CSV
                   </button>
                 </div>
@@ -1074,8 +1081,8 @@ function App() {
         <div className="fixed inset-0 z-50 bg-gray-50 dark:bg-slate-950 flex flex-col">
           <div className="h-14 flex items-center justify-between px-6 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800">
             <div className="flex items-center gap-4">
-              <button onClick={stopFocusMode} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
-                <ArrowLeft size={20} className="text-gray-700 dark:text-slate-300" />
+              <button onClick={stopFocusMode} className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-300 px-3 py-2.5 rounded-xl transition-colors text-xs">
+                <ArrowLeft size={13} />
               </button>
               <div>
                 <div className="flex items-center gap-2">
@@ -1086,7 +1093,7 @@ function App() {
               </div>
             </div>
             <div className="w-48 h-1.5 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${((focusIndex + 1) / getFilteredResults().length) * 100}%` }} />
+              <div className="h-full bg-emerald-600 transition-all duration-300" style={{ width: `${((focusIndex + 1) / getFilteredResults().length) * 100}%` }} />
             </div>
           </div>
           <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
@@ -1095,9 +1102,9 @@ function App() {
             </div>
           </div>
           <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
-            <button onClick={handleFocusPrev} disabled={focusIndex === 0} className="p-3 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-700 disabled:opacity-20 disabled:cursor-not-allowed transition-all"><ChevronLeft size={22} /></button>
+            <button onClick={handleFocusPrev} disabled={focusIndex === 0} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 text-xs disabled:opacity-20 disabled:cursor-not-allowed transition-all"><ChevronLeft size={13} /></button>
             <span className="text-xs text-gray-400 dark:text-slate-600 font-medium">Navegar</span>
-            <button onClick={handleFocusNext} disabled={focusIndex === getFilteredResults().length - 1} className="p-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-900/40 disabled:opacity-20 disabled:cursor-not-allowed transition-all active:scale-95"><ChevronRight size={22} /></button>
+            <button onClick={handleFocusNext} disabled={focusIndex === getFilteredResults().length - 1} className="flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs disabled:opacity-20 disabled:cursor-not-allowed transition-all"><ChevronRight size={13} /></button>
           </div>
         </div>
       )}
@@ -1156,7 +1163,7 @@ function App() {
               ))}
             </div>
             <div className="p-4 border-t border-gray-200 dark:border-slate-700 flex gap-2">
-              <button onClick={() => { const text = invalidClients.map(c => `- ${c.name} | ${c.phone} (${c.reason})`).join('\n'); copyToClipboard(`⚠️ ENVIO MANUAL NECESSÁRIO:\n${text}`); }} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all">
+              <button onClick={() => { const text = invalidClients.map(c => `- ${c.name} | ${c.phone} (${c.reason})`).join('\n'); copyToClipboard(`⚠️ ENVIO MANUAL NECESSÁRIO:\n${text}`); }} className="flex-1 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-600 text-white py-2 px-4 rounded-lg text-sm font-semibold transition-all">
                 <Copy size={13} /> Copiar lista
               </button>
               <button onClick={() => setShowInvalidReport(false)} className="px-4 py-2 rounded-lg border border-gray-300 dark:border-slate-600 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all">Fechar</button>

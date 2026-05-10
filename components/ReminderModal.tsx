@@ -86,7 +86,7 @@ const ReminderModal: React.FC<ReminderModalProps> = ({ client, defaultTime, onCl
               <button
                 key={label}
                 onClick={() => setQuickDate(i)}
-                className="flex-1 py-2 rounded-xl border border-gray-200 dark:border-slate-600 text-xs font-semibold text-gray-600 dark:text-slate-300 hover:bg-violet-50 dark:hover:bg-violet-900/20 hover:border-violet-300 dark:hover:border-violet-700 hover:text-violet-700 dark:hover:text-violet-300 transition-all"
+                className="flex-1 py-2 rounded-xl bg-gray-100 hover:bg-violet-100 dark:bg-slate-700 dark:hover:bg-violet-900/30 text-xs font-semibold text-gray-600 dark:text-slate-300 hover:text-violet-700 dark:hover:text-violet-300 transition-all"
               >
                 {label}
               </button>
@@ -151,7 +151,7 @@ const ReminderModal: React.FC<ReminderModalProps> = ({ client, defaultTime, onCl
           >
             Agendar
           </button>
-          <button onClick={onClose} className="px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
+          <button onClick={onClose} className="px-4 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-sm text-gray-600 dark:text-slate-400 transition-all">
             Cancelar
           </button>
         </div>

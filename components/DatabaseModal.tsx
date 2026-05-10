@@ -39,7 +39,7 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
 
   const typeLabel = (type: string) => type === 'iptv' ? 'IPTV' : 'P2P';
   const typeBg = (type: string) => type === 'iptv'
-    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
+    ? 'bg-emerald-600/15 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
     : 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400';
 
   return (
@@ -73,14 +73,14 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
               placeholder="Pesquisar cliente..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 bg-gray-50 dark:bg-slate-900 text-gray-800 dark:text-white text-sm outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-400 dark:placeholder-slate-500"
+              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300 text-xs outline-none focus:ring-2 focus:ring-emerald-500 placeholder-gray-400 dark:placeholder-slate-500"
             />
           </div>
           <div className="flex gap-2">
             <button
               onClick={handleLoadAll}
               disabled={filtered.length === 0}
-              className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white py-2.5 rounded-xl text-sm font-semibold transition-all"
+              className="flex-1 flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white py-2.5 px-3 rounded-xl text-xs font-semibold transition-all"
             >
               <Upload size={14} />
               {search ? `Carregar ${filtered.length} filtrado${filtered.length !== 1 ? 's' : ''}` : 'Carregar todos'}
@@ -89,7 +89,7 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
               <button
                 onClick={() => setConfirmClear(true)}
                 disabled={clients.length === 0}
-                className="px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 hover:border-red-200 dark:hover:border-red-900 disabled:opacity-30 transition-all"
+                className="px-3.5 py-2.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 dark:text-slate-500 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-30 transition-all"
                 title="Limpar banco"
               >
                 <Trash2 size={15} />
@@ -97,7 +97,7 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
             ) : (
               <div className="flex gap-1">
                 <button onClick={() => { onClearAll(); setConfirmClear(false); }} className="px-3 py-2.5 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold transition-all">Limpar</button>
-                <button onClick={() => setConfirmClear(false)} className="px-3 py-2.5 rounded-xl border border-gray-200 dark:border-slate-600 text-gray-500 dark:text-slate-400 text-xs transition-all"><RotateCcw size={13} /></button>
+                <button onClick={() => setConfirmClear(false)} className="px-3 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-500 dark:text-slate-400 text-xs transition-all"><RotateCcw size={13} /></button>
               </div>
             )}
           </div>

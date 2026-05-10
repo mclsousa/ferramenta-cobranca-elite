@@ -297,10 +297,10 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
         {/* Header */}
         <div className="flex items-center justify-between p-4 sm:p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 flex-shrink-0">
           <h2 className="text-lg sm:text-xl font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <SettingsIcon className="text-primary" /> Configurações
+            <SettingsIcon className="text-emerald-600" /> Configurações
           </h2>
-          <button onClick={onClose} className="text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
-            <X size={24} />
+          <button onClick={onClose} className="bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 p-2 rounded-xl transition-colors">
+            <X size={18} />
           </button>
         </div>
 
@@ -317,7 +317,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                 <button 
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)} 
-                    className={`flex-none sm:flex-1 py-3 px-4 text-sm font-medium transition-colors whitespace-nowrap border-t-2 border-b-0 border-x ${activeTab === tab.id ? 'bg-white dark:bg-gray-700 text-primary border-t-primary border-x-transparent border-b-transparent' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 border-x-transparent border-t-transparent hover:border-b-transparent'}`}
+                    className={`flex-none sm:flex-1 py-3 px-4 text-sm font-medium transition-colors whitespace-nowrap border-t-2 border-b-0 border-x ${activeTab === tab.id ? 'bg-white dark:bg-gray-700 text-emerald-600 border-t-emerald-600 border-x-transparent border-b-transparent' : 'border-transparent text-gray-500 hover:text-gray-800 dark:hover:text-gray-200 border-x-transparent border-t-transparent hover:border-b-transparent'}`}
                     style={{ borderRightColor: 'transparent', borderLeftColor: 'transparent' }} // Force transparent borders for inactive tabs
                 >
                     {tab.label}
@@ -333,27 +333,27 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                  {/* Section: General Settings */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <section>
-                        <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3 flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-primary"></span> Chave PIX
+                        <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <span className="w-2 h-2 rounded-full bg-emerald-600"></span> Chave PIX
                         </h3>
                         <input 
                         type="text" 
                         value={localConfig.pixKey}
                         onChange={(e) => handleChange('pixKey', e.target.value)}
-                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                        className="w-full p-3 rounded-xl bg-gray-100 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                         placeholder="Seu e-mail, CPF ou telefone"
                         />
                     </section>
 
                     <section>
-                        <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                             <Clock size={14} /> Horário de Vencimento
                         </h3>
                         <input 
                         type="time" 
                         value={localConfig.defaultTime || '20:00'}
                         onChange={(e) => handleChange('defaultTime', e.target.value)}
-                        className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                        className="w-full p-3 rounded-xl bg-gray-100 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                         />
                         <p className="text-[10px] text-gray-500 mt-1">Horário padrão exibido nos cartões e mensagens.</p>
                     </section>
@@ -391,14 +391,14 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                     </div>
                     
                     <div className="flex flex-wrap gap-4">
-                        <button 
+                        <button
                         onClick={handleBackup}
-                        className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                         >
-                            <Download size={16} /> Baixar Backup (JSON)
+                            <Download size={13} /> Baixar Backup (JSON)
                         </button>
-                        <label className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 px-4 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer">
-                            <Upload size={16} /> Restaurar Backup
+                        <label className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl text-xs transition-colors cursor-pointer">
+                            <Upload size={13} /> Restaurar Backup
                             <input 
                             ref={fileInputRef}
                             type="file" 
@@ -425,7 +425,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                             value={localConfig.templates.normal}
                             onChange={(e) => handleTemplateChange('normal', e.target.value)}
                             rows={8}
-                            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none text-sm font-mono"
+                            className="w-full p-3 rounded-xl bg-gray-100 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:outline-none text-sm font-mono"
                         ></textarea>
                     </section>
                     <section>
@@ -437,7 +437,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                             value={localConfig.templates.expired}
                             onChange={(e) => handleTemplateChange('expired', e.target.value)}
                             rows={8}
-                            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none text-sm font-mono border-red-200 dark:border-red-900/30"
+                            className="w-full p-3 rounded-xl bg-gray-100 dark:bg-slate-800 focus:ring-2 focus:ring-primary focus:outline-none text-sm font-mono border-red-200 dark:border-red-900/30"
                         ></textarea>
                     </section>
                 </div>
@@ -446,11 +446,11 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                 <section className="border-t border-gray-200 dark:border-gray-700 pt-6">
                     <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Modelos Adicionais</h3>
-                    <button 
+                    <button
                         onClick={handleAddTemplate}
-                        className="flex items-center gap-1 text-xs bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 px-3 py-1.5 rounded-lg hover:bg-purple-200 dark:hover:bg-purple-900/50 transition-colors"
+                        className="flex items-center gap-1.5 bg-purple-100 hover:bg-purple-200 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 text-purple-600 dark:text-purple-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                     >
-                        <Plus size={14} /> Criar Modelo
+                        <Plus size={13} /> Criar Modelo
                     </button>
                     </div>
                     
@@ -462,12 +462,12 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                 type="text" 
                                 value={template.label}
                                 onChange={(e) => handleUpdateTemplate(template.id, 'label', e.target.value)}
-                                className="flex-1 p-2 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-bold focus:ring-2 focus:ring-purple-500 outline-none"
+                                className="flex-1 p-2 rounded-xl bg-gray-100 dark:bg-slate-800 text-sm font-bold focus:ring-2 focus:ring-purple-500 outline-none"
                                 placeholder="Nome do Modelo (Ex: Amigável)"
                                 />
                                 <button 
                                 onClick={() => handleDeleteTemplate(template.id)}
-                                className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                                className="p-2 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
                                 title="Excluir"
                                 >
                                 <Trash2 size={16} />
@@ -477,7 +477,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                 value={template.content}
                                 onChange={(e) => handleUpdateTemplate(template.id, 'content', e.target.value)}
                                 rows={4}
-                                className="w-full p-2.5 rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-purple-500 outline-none text-xs font-mono"
+                                className="w-full p-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 focus:ring-2 focus:ring-purple-500 outline-none text-xs font-mono"
                                 placeholder="Conteúdo da mensagem..."
                             ></textarea>
                         </div>
@@ -494,24 +494,24 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
               <div className="flex flex-col h-full overflow-hidden">
                   <div className="flex items-center justify-between mb-4 flex-shrink-0">
                       <div>
-                        <h3 className="text-sm font-semibold text-primary uppercase tracking-wider flex items-center gap-2">
+                        <h3 className="text-sm font-semibold text-emerald-600 uppercase tracking-wider flex items-center gap-2">
                             <CreditCard size={16} /> Tabelas de Preços
                         </h3>
                         <p className="text-xs text-gray-500">Crie tabelas diferentes para clientes vinculados (Ex: 2 Telas).</p>
                       </div>
                       {!isAddingGroup && (
-                        <button 
+                        <button
                             onClick={handleAddPlanGroup}
-                            className="flex items-center gap-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 px-3 py-1.5 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors"
+                            className="flex items-center gap-1.5 bg-emerald-600/15 hover:bg-emerald-600/25 dark:bg-emerald-600/20 dark:hover:bg-emerald-600/30 text-emerald-600 dark:text-emerald-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                         >
-                            <Plus size={14} /> Nova Tabela
+                            <Plus size={13} /> Nova Tabela
                         </button>
                       )}
                   </div>
 
                   {/* Formatting Option & Table Title */}
                   <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                      <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-800/50">
                            <div className="flex items-center gap-2 mb-1">
                                <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300">Título Base (Global)</h4>
                                <div className="group relative">
@@ -525,12 +525,12 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                type="text" 
                                value={localConfig.plansTitle || 'TABELA DE PLANOS'}
                                onChange={(e) => handleChange('plansTitle', e.target.value)}
-                               className="w-full p-2 text-xs rounded border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                               className="w-full p-2 text-xs rounded-xl bg-gray-100 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                                placeholder="Ex: TABELA DE PLANOS"
                            />
                       </div>
 
-                      <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-lg border border-blue-100 dark:border-blue-800/50">
+                      <div className="bg-blue-50 dark:bg-blue-900/10 p-3 rounded-xl border border-blue-100 dark:border-blue-800/50">
                            <div className="flex items-center gap-2 mb-1">
                                <h4 className="text-xs font-bold text-blue-700 dark:text-blue-300">Formato da Linha de Preço</h4>
                                <div className="group relative">
@@ -544,14 +544,14 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                type="text" 
                                value={localConfig.priceLineFormat || '{nome} - R$ {valor}'}
                                onChange={(e) => handleChange('priceLineFormat', e.target.value)}
-                               className="w-full p-2 text-xs font-mono rounded border border-blue-200 dark:border-blue-700 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                               className="w-full p-2 text-xs font-mono rounded-xl bg-gray-100 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-blue-500"
                            />
                       </div>
                   </div>
 
                   <div className="flex flex-col md:flex-row gap-4 h-full overflow-hidden">
                       {/* Sidebar / List of Groups */}
-                      <div className="w-full md:w-1/3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[200px] md:max-h-none">
+                      <div className="w-full md:w-1/3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-y-auto max-h-[200px] md:max-h-none">
                           {(localConfig.planGroups || []).map(group => (
                               <div 
                                 key={group.id}
@@ -564,7 +564,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                   {group.id !== 'default' && (
                                       <button 
                                         onClick={(e) => { e.stopPropagation(); handleDeletePlanGroup(group.id); }}
-                                        className="text-gray-400 hover:text-red-500 p-1"
+                                        className="p-1.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
                                         title="Apagar Tabela"
                                       >
                                           <Trash2 size={14} />
@@ -582,24 +582,24 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                       value={newGroupName}
                                       onChange={(e) => setNewGroupName(e.target.value)}
                                       placeholder="Nome (Ex: 4 Telas)"
-                                      className="w-full p-2 text-sm rounded border border-blue-300 dark:border-blue-700 focus:outline-none mb-2 bg-white dark:bg-gray-800"
+                                      className="w-full p-2 text-sm rounded-xl bg-gray-100 dark:bg-slate-800 mb-2 outline-none"
                                       onKeyDown={(e) => {
                                           if (e.key === 'Enter') handleSaveNewGroup();
                                           if (e.key === 'Escape') handleCancelNewGroup();
                                       }}
                                   />
                                   <div className="flex justify-end gap-2">
-                                      <button 
+                                      <button
                                           onClick={handleCancelNewGroup}
-                                          className="text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                          className="p-1.5 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-gray-500 dark:text-slate-400 transition-colors"
                                       >
-                                          <X size={16} />
+                                          <X size={14} />
                                       </button>
-                                      <button 
+                                      <button
                                           onClick={handleSaveNewGroup}
-                                          className="text-xs bg-blue-600 text-white p-1 rounded hover:bg-blue-700"
+                                          className="p-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white transition-colors"
                                       >
-                                          <Check size={16} />
+                                          <Check size={14} />
                                       </button>
                                   </div>
                               </div>
@@ -607,28 +607,28 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                       </div>
 
                       {/* Plans Editor */}
-                      <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 overflow-y-auto">
+                      <div className="flex-1 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 overflow-y-auto">
                           {currentGroup ? (
                               <>
                                 <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100 dark:border-gray-700">
                                     <h4 className="font-bold text-gray-800 dark:text-white">{currentGroup.label}</h4>
-                                    <button 
+                                    <button
                                         onClick={() => handleAddPlanToGroup(currentGroup.id)}
-                                        className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition-colors flex items-center gap-1"
+                                        className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                                     >
-                                        <Plus size={12} /> Adicionar Preço
+                                        <Plus size={13} /> Adicionar Preço
                                     </button>
                                 </div>
 
                                 {/* Per-Group Title Override */}
-                                <div className="mb-4 bg-gray-50 dark:bg-gray-700/30 p-2 rounded-lg border border-dashed border-gray-300 dark:border-gray-600">
+                                <div className="mb-4 bg-gray-50 dark:bg-gray-700/30 p-2 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
                                     <label className="block text-[10px] uppercase font-bold text-gray-500 mb-1">Título desta Tabela (Opcional)</label>
                                     <input 
                                         type="text" 
                                         value={currentGroup.title || ''}
                                         onChange={(e) => handleUpdateGroupTitle(currentGroup.id, e.target.value)}
                                         placeholder={`Padrão: ${localConfig.plansTitle} ${currentGroup.id !== 'default' ? `(${currentGroup.label})` : ''}`}
-                                        className="w-full p-2 text-sm rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:outline-none focus:ring-1 focus:ring-primary"
+                                        className="w-full p-2 text-sm rounded-xl bg-gray-100 dark:bg-slate-800 focus:outline-none focus:ring-1 focus:ring-primary"
                                     />
                                     <p className="text-[10px] text-gray-400 mt-1">Se preenchido, este título substituirá o padrão global apenas para este grupo.</p>
                                 </div>
@@ -641,7 +641,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                                 value={plan.label}
                                                 onChange={(e) => handleUpdatePlanInGroup(currentGroup.id, plan.id, 'label', e.target.value)}
                                                 placeholder="Nome (ex: 1 Mês)"
-                                                className="flex-1 min-w-0 p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-1 focus:ring-primary outline-none"
+                                                className="flex-1 min-w-0 p-2 rounded-xl bg-gray-100 dark:bg-slate-800 text-sm focus:ring-1 focus:ring-primary outline-none"
                                             />
                                             <div className="relative w-24 sm:w-24 flex-shrink-0">
                                                 <span className="absolute left-2.5 top-2 text-gray-400 text-xs">R$</span>
@@ -649,12 +649,12 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                                                     type="number" 
                                                     value={plan.price}
                                                     onChange={(e) => handleUpdatePlanInGroup(currentGroup.id, plan.id, 'price', parseFloat(e.target.value) || 0)}
-                                                    className="w-full pl-7 p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm focus:ring-1 focus:ring-primary outline-none"
+                                                    className="w-full pl-7 p-2 rounded-xl bg-gray-100 dark:bg-slate-800 text-sm focus:ring-1 focus:ring-primary outline-none"
                                                 />
                                             </div>
                                             <button 
                                                 onClick={() => handleDeletePlanFromGroup(currentGroup.id, plan.id)}
-                                                className="p-2 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+                                                className="p-2 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
                                                 title="Remover Plano"
                                             >
                                                 <Trash2 size={16} />
@@ -709,17 +709,17 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                         </h3>
                         <p className="text-xs text-gray-500">Crie etiquetas para organizar seus clientes (VIP, Revenda, etc).</p>
                     </div>
-                    <button 
+                    <button
                         onClick={handleAddTag}
-                        className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                        className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                     >
-                        <Plus size={14} /> Nova Tag
+                        <Plus size={13} /> Nova Tag
                     </button>
                  </div>
 
                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                      {(localConfig.tags || []).map((tag) => (
-                         <div key={tag.id} className="flex items-center gap-2 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                         <div key={tag.id} className="flex items-center gap-2 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-slate-700">
                              <input 
                                 type="color" 
                                 value={tag.color}
@@ -735,7 +735,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                              />
                              <button 
                                 onClick={() => handleDeleteTag(tag.id)}
-                                className="text-gray-400 hover:text-red-500 p-1 rounded"
+                                className="p-1.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
                              >
                                 <Trash2 size={16} />
                              </button>
@@ -759,22 +759,22 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                         </h3>
                         <p className="text-xs text-gray-500">Links úteis para copiar rapidamente (Tutoriais, Apps, Redes Sociais).</p>
                     </div>
-                    <button 
+                    <button
                         onClick={handleAddLink}
-                        className="flex items-center gap-1 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-3 py-1.5 rounded-lg hover:bg-blue-200 dark:hover:bg-blue-900/50 transition-colors"
+                        className="flex items-center gap-1.5 bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 px-3 py-2.5 rounded-xl text-xs transition-colors"
                     >
-                        <Plus size={14} /> Nova Link
+                        <Plus size={13} /> Novo Link
                     </button>
                  </div>
 
                  <div className="space-y-3">
                      {(localConfig.quickLinks || []).map((link) => (
-                         <div key={link.id} className="flex items-center gap-3 bg-white dark:bg-gray-800 p-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+                         <div key={link.id} className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800 p-3 rounded-xl border border-gray-100 dark:border-slate-700">
                              <input 
                                 type="text"
                                 value={link.label}
                                 onChange={(e) => handleUpdateLink(link.id, 'label', e.target.value)}
-                                className="w-1/3 text-sm font-bold bg-gray-50 dark:bg-gray-900/50 rounded p-2 border border-gray-200 dark:border-gray-700 focus:ring-1 focus:ring-blue-500 outline-none text-gray-800 dark:text-white"
+                                className="w-1/3 text-sm font-bold bg-gray-100 dark:bg-slate-800 rounded-xl p-2 focus:ring-1 focus:ring-blue-500 outline-none text-gray-800 dark:text-white"
                                 placeholder="Nome (ex: App Android)"
                              />
                              <input 
@@ -786,7 +786,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                              />
                              <button 
                                 onClick={() => handleDeleteLink(link.id)}
-                                className="text-gray-400 hover:text-red-500 p-1 rounded"
+                                className="p-1.5 rounded-xl bg-gray-100 hover:bg-red-100 dark:bg-slate-700 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
                              >
                                 <Trash2 size={16} />
                              </button>
@@ -807,7 +807,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
         <div className="p-4 sm:p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end flex-shrink-0">
             <button 
                 onClick={() => onSave(localConfig)}
-                className="flex items-center gap-2 bg-primary hover:bg-primary-hover text-white px-8 py-3 rounded-xl font-bold transition-all shadow-lg hover:shadow-primary/25 active:scale-95"
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors"
             >
                 <Save size={18} />
                 Salvar Configurações

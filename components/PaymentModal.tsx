@@ -37,7 +37,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ client, onClose, onConfirm 
       >
         <div className="p-5 border-b border-gray-100 dark:border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl">
+            <div className="p-2 bg-emerald-600/15 dark:bg-emerald-900/30 rounded-xl">
               <DollarSign size={18} className="text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
@@ -75,11 +75,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ client, onClose, onConfirm 
           <button
             onClick={handleConfirm}
             disabled={!amount || parseFloat(amount.replace(',', '.')) <= 0}
-            className="flex-1 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.97]"
+            className="flex-1 bg-emerald-600 hover:bg-emerald-600 disabled:opacity-40 disabled:cursor-not-allowed text-white py-3 rounded-xl text-sm font-bold transition-all active:scale-[0.97]"
           >
             Confirmar pagamento
           </button>
-          <button onClick={onClose} className="px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-600 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
+          <button onClick={onClose} className="px-4 py-3 rounded-xl bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-sm text-gray-600 dark:text-slate-400 transition-all">
             Cancelar
           </button>
         </div>
