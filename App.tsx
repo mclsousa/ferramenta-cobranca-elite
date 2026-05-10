@@ -934,12 +934,13 @@ function App() {
                 <CalendarCheck size={16} />
                 {weekday.mode === 'friday_double' ? 'Próximos (Amanhã + Depois)' : 'Próximos (Amanhã)'}
               </button>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
                   <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
-                <div>
+                <span className="text-gray-400 dark:text-slate-600 pb-2.5 text-sm">→</span>
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
                   <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
@@ -964,12 +965,13 @@ function App() {
               <button onClick={() => { handleFilterExpiredRecent(); setIsSidebarOpen(false); }} className="w-full bg-red-500/8 hover:bg-red-500/15 text-red-500 dark:text-red-400 border border-red-500/20 py-3 px-4 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 active:scale-[0.98]">
                 <History size={16} /> Vencidos (4-5 dias)
               </button>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
                   <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
-                <div>
+                <span className="text-gray-400 dark:text-slate-600 pb-2.5 text-sm">→</span>
+                <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
                   <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full p-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
