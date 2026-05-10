@@ -322,8 +322,11 @@ const ClientCard: React.FC<ClientCardProps> = ({
           onClick={() => setIsCollapsed(false)}
         >
             {/* Sinal de status */}
-            <div className="flex-shrink-0 flex items-center justify-center w-8">
+            <div className="flex-shrink-0 flex flex-col items-center justify-center w-8 gap-0.5">
                 <Cast size={20} style={{ color: barColor }} />
+                <span className="text-[8px] font-bold leading-none" style={{ color: barColor }}>
+                  {activeBars === 1 ? 'vencido' : activeBars === 2 ? 'amanhã' : activeBars === 3 ? '2 dias' : 'ativo'}
+                </span>
             </div>
 
             {/* Info */}
