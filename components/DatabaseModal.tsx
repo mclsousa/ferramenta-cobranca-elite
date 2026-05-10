@@ -41,6 +41,7 @@ const DatabaseModal: React.FC<DatabaseModalProps> = ({ isOpen, onClose, clients,
     ? 'bg-emerald-600/15 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400'
     : 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400';
 
+
   return (
     <div className="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div

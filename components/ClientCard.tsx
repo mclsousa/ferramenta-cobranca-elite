@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { ParsedClient, AppConfig, ResultViewMode } from '../types';
 import { extractPhone, padZero, formatDate, processSpinSyntax, applyAntiBan, extractCredentials } from '../utils/helpers';
-import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, DollarSign, Bell, Cast } from 'lucide-react';
+import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, Bell, Cast, Pencil, Check, X as XIcon } from 'lucide-react';
 
 interface ClientCardProps {
   client: ParsedClient;
@@ -11,15 +11,15 @@ interface ClientCardProps {
   viewMode: ResultViewMode;
   searchQuery: string;
   isSent: boolean;
-  isPaid?: boolean;
   hasReminder?: boolean;
+  phoneOverride?: string;
   onEdit: (client: ParsedClient) => void;
   onCopy: (text: string) => void;
   onMarkAsSent: (id: string, action: 'whatsapp' | 'copy' | 'receipt') => void;
   onOpenReceipt: (client: ParsedClient) => void;
   onLinkClient: (client: ParsedClient) => void;
-  onMarkAsPaid?: (client: ParsedClient) => void;
   onAddReminder?: (client: ParsedClient) => void;
+  onPhoneEdit?: (clientName: string, phone: string) => void;
 }
 
 const WhatsappIcon = ({ size = 16, className }: { size?: number, className?: string }) => (
@@ -54,15 +54,30 @@ const getAvatarColor = (name: string) => {
 };
 
 const ClientCard: React.FC<ClientCardProps> = ({
-  client, config, isExpiredMode, viewMode, searchQuery, isSent, isPaid, hasReminder,
-  onEdit, onCopy, onMarkAsSent, onOpenReceipt, onLinkClient, onMarkAsPaid, onAddReminder
+  client, config, isExpiredMode, viewMode, searchQuery, isSent, hasReminder, phoneOverride,
+  onEdit, onCopy, onMarkAsSent, onOpenReceipt, onLinkClient, onAddReminder, onPhoneEdit
 }) => {
   const isFocusMode = viewMode === 'focus';
   const [isCollapsed, setIsCollapsed] = useState(!isFocusMode);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>('auto');
   const [selectedPlanGroupId, setSelectedPlanGroupId] = useState<string>('default');
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
 
-  const { cleanText, whatsapp, original: originalPhone } = useMemo(() => extractPhone(client.rawNotes), [client.rawNotes]);
+  const { cleanText, whatsapp: extractedWhatsapp, original: originalPhone } = useMemo(() => extractPhone(client.rawNotes), [client.rawNotes]);
+  const { whatsapp: overrideWhatsapp, original: overrideOriginal } = useMemo(() => phoneOverride ? extractPhone(phoneOverride) : { whatsapp: null, original: null }, [phoneOverride]);
+  const whatsapp = overrideWhatsapp || extractedWhatsapp;
+  const displayPhone = overrideOriginal || originalPhone;
+
+  const startPhoneEdit = () => {
+    setPhoneInput(phoneOverride || originalPhone || '');
+    setIsEditingPhone(true);
+  };
+  const savePhoneEdit = () => {
+    onPhoneEdit?.(client.name, phoneInput.trim());
+    setIsEditingPhone(false);
+  };
+  const cancelPhoneEdit = () => setIsEditingPhone(false);
   const hasLinkedClients = client.linked && client.linked.length > 0;
   const credentials = useMemo(() => extractCredentials(cleanText), [cleanText]);
 
@@ -275,9 +290,31 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 ))}
              </div>
              <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">{formatDate(client.dueDate)}</div>
-             <div className="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center gap-1 font-mono">
-                {whatsapp ? <Phone size={12} className="text-emerald-600" /> : <span className="w-3"/>}
-                {originalPhone || '-'}
+             <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 font-mono group/phone min-w-0">
+                {whatsapp ? <Phone size={12} className="text-emerald-600 flex-shrink-0" /> : <span className="w-3 flex-shrink-0"/>}
+                {isEditingPhone ? (
+                  <>
+                    <input
+                      type="text"
+                      value={phoneInput}
+                      onChange={e => setPhoneInput(e.target.value)}
+                      onKeyDown={e => { if (e.key === 'Enter') savePhoneEdit(); if (e.key === 'Escape') cancelPhoneEdit(); }}
+                      onClick={e => e.stopPropagation()}
+                      className="w-28 bg-white dark:bg-slate-700 border border-emerald-400 rounded px-1 py-0.5 text-xs outline-none"
+                      placeholder="+5511999999999"
+                      autoFocus
+                    />
+                    <button onClick={e => { e.stopPropagation(); savePhoneEdit(); }} className="text-emerald-600 hover:text-emerald-500 flex-shrink-0"><Check size={12} /></button>
+                    <button onClick={e => { e.stopPropagation(); cancelPhoneEdit(); }} className="text-red-400 hover:text-red-500 flex-shrink-0"><XIcon size={12} /></button>
+                  </>
+                ) : (
+                  <>
+                    <span className="truncate">{displayPhone || '-'}</span>
+                    {onPhoneEdit && (
+                      <button onClick={e => { e.stopPropagation(); startPhoneEdit(); }} className="opacity-0 group-hover/phone:opacity-100 text-gray-300 hover:text-blue-500 transition-all flex-shrink-0" title="Editar telefone"><Pencil size={10} /></button>
+                    )}
+                  </>
+                )}
              </div>
              <div className="text-[10px] text-gray-400 truncate italic">{cleanText || 'Sem notas'}</div>
           </div>
@@ -300,18 +337,11 @@ const ClientCard: React.FC<ClientCardProps> = ({
     <div className={`${containerClasses} relative overflow-hidden ${isFocusMode ? 'h-full' : ''}`}>
 
       {/* Status badges */}
-      {(isSent || isPaid) && (
+      {isSent && (
         <div className="absolute top-2 right-2 z-20 flex flex-col items-end gap-1">
-          {isPaid && (
-            <div className="flex items-center gap-1 bg-emerald-600/15 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm">
-              <DollarSign size={9} /> Pago
-            </div>
-          )}
-          {isSent && !isPaid && (
-            <div className="flex items-center gap-1 bg-emerald-600/15 dark:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm">
-              <CheckCircle size={9} /> Enviado
-            </div>
-          )}
+          <div className="flex items-center gap-1 bg-emerald-600/15 dark:bg-emerald-600/20 text-emerald-600 dark:text-emerald-400 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider shadow-sm">
+            <CheckCircle size={9} /> Enviado
+          </div>
         </div>
       )}
 
@@ -353,6 +383,32 @@ const ClientCard: React.FC<ClientCardProps> = ({
                         </span>
                     ))}
                 </div>
+
+                {onPhoneEdit && (
+                  <div className="flex items-center gap-1 mt-0.5 group/phone" onClick={e => e.stopPropagation()}>
+                    <Phone size={9} className="text-emerald-500 flex-shrink-0" />
+                    {isEditingPhone ? (
+                      <>
+                        <input
+                          type="text"
+                          value={phoneInput}
+                          onChange={e => setPhoneInput(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter') savePhoneEdit(); if (e.key === 'Escape') cancelPhoneEdit(); }}
+                          className="bg-white dark:bg-slate-700 border border-emerald-400 rounded px-1 py-px text-[9px] outline-none w-32"
+                          placeholder="+5511999999999"
+                          autoFocus
+                        />
+                        <button onClick={savePhoneEdit} className="text-emerald-600 hover:text-emerald-500 flex-shrink-0"><Check size={10} /></button>
+                        <button onClick={cancelPhoneEdit} className="text-red-400 hover:text-red-500 flex-shrink-0"><XIcon size={10} /></button>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-[9px] text-gray-400 dark:text-slate-500 font-mono">{displayPhone || <span className="italic opacity-50">sem telefone</span>}</span>
+                        <button onClick={startPhoneEdit} className="opacity-0 group-hover/phone:opacity-100 text-gray-300 hover:text-blue-500 transition-all flex-shrink-0" title="Editar telefone"><Pencil size={9} /></button>
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {hasLinkedClients && (
                     <div className="text-[10px] text-blue-500 dark:text-blue-400 flex items-center gap-1 mt-0.5">
@@ -402,11 +458,6 @@ const ClientCard: React.FC<ClientCardProps> = ({
                     <Bell size={15} />
                   </button>
                 )}
-                {onMarkAsPaid && (
-                  <button onClick={() => onMarkAsPaid(client)} className={`p-1.5 rounded transition-colors ${isPaid ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-400 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-600'}`} title={isPaid ? 'Pago' : 'Marcar como pago'}>
-                    <DollarSign size={15} />
-                  </button>
-                )}
                 <button onClick={() => handleAction('whatsapp')} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-400 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-100'}`} title="WhatsApp">
                     <WhatsappIcon size={15} />
                 </button>
@@ -451,7 +502,30 @@ const ClientCard: React.FC<ClientCardProps> = ({
                             </div>
                          )}
                          <p className="text-sm sm:text-lg text-gray-500">{statusText}</p>
-                         <p className="font-mono text-gray-400 mt-1">{whatsapp ? formatPhone(whatsapp) : originalPhone}</p>
+                         <div className="font-mono text-gray-400 mt-1 flex items-center gap-2 justify-center group/phone">
+                           {isEditingPhone ? (
+                             <div className="flex items-center gap-1.5">
+                               <input
+                                 type="text"
+                                 value={phoneInput}
+                                 onChange={e => setPhoneInput(e.target.value)}
+                                 onKeyDown={e => { if (e.key === 'Enter') savePhoneEdit(); if (e.key === 'Escape') cancelPhoneEdit(); }}
+                                 className="bg-white dark:bg-slate-700 border border-emerald-400 rounded-lg px-2 py-1 text-xs outline-none w-44"
+                                 placeholder="+5511999999999"
+                                 autoFocus
+                               />
+                               <button onClick={savePhoneEdit} className="text-emerald-600 hover:text-emerald-500"><Check size={14} /></button>
+                               <button onClick={cancelPhoneEdit} className="text-red-400 hover:text-red-500"><XIcon size={14} /></button>
+                             </div>
+                           ) : (
+                             <>
+                               <span>{displayPhone || (whatsapp ? formatPhone(whatsapp) : <span className="italic opacity-50 text-sm">sem telefone</span>)}</span>
+                               {onPhoneEdit && (
+                                 <button onClick={startPhoneEdit} className="opacity-0 group-hover/phone:opacity-100 text-gray-300 hover:text-blue-500 transition-all" title="Editar telefone"><Pencil size={13} /></button>
+                               )}
+                             </>
+                           )}
+                         </div>
                     </div>
                 )}
 
@@ -578,13 +652,13 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 <button onClick={() => onLinkClient(client)} className="p-1.5 rounded text-gray-400 dark:text-slate-500 hover:text-blue-500 transition-colors" title="Vincular"><LinkIcon size={15} /></button>
                 <button onClick={() => onOpenReceipt(client)} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'opacity-30 cursor-not-allowed text-gray-300' : 'text-gray-400 dark:text-slate-500 hover:text-orange-500'}`} title="Recibo"><FileText size={15} /></button>
                 <button onClick={() => onEdit(client)} className="p-1.5 rounded text-gray-400 dark:text-slate-500 hover:text-emerald-600 transition-colors" title="Editar"><Edit size={15} /></button>
-                <button onClick={() => onCopy(originalPhone || '')} disabled={!originalPhone} className={`p-1.5 rounded transition-colors ${!originalPhone ? 'opacity-30 cursor-not-allowed text-gray-300' : 'text-gray-400 dark:text-slate-500 hover:text-indigo-500'}`} title="Copiar Tel"><Phone size={15} /></button>
+                <button onClick={() => onCopy(displayPhone || '')} disabled={!displayPhone} className={`p-1.5 rounded transition-colors ${!displayPhone ? 'opacity-30 cursor-not-allowed text-gray-300' : 'text-gray-400 dark:text-slate-500 hover:text-indigo-500'}`} title="Copiar Tel"><Phone size={15} /></button>
+                {onPhoneEdit && (
+                  <button onClick={startPhoneEdit} className="p-1.5 rounded text-gray-400 dark:text-slate-500 hover:text-blue-500 transition-colors" title="Editar telefone"><Pencil size={15} /></button>
+                )}
                 <button onClick={() => onCopy(client.name)} className="p-1.5 rounded text-gray-400 dark:text-slate-500 hover:text-orange-500 transition-colors" title="Copiar Nome"><User size={15} /></button>
                 {onAddReminder && (
                   <button onClick={() => onAddReminder(client)} className={`p-1.5 rounded transition-colors ${hasReminder ? 'text-violet-500' : 'text-gray-400 dark:text-slate-500 hover:text-violet-500'}`} title="Lembrete"><Bell size={15} /></button>
-                )}
-                {onMarkAsPaid && (
-                  <button onClick={() => onMarkAsPaid(client)} className={`p-1.5 rounded transition-colors ${isPaid ? 'text-emerald-600' : 'text-gray-400 dark:text-slate-500 hover:text-emerald-600'}`} title="Marcar pago"><DollarSign size={15} /></button>
                 )}
                 <div className="flex-1" />
                 <button onClick={() => handleAction('copy')} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/70 dark:bg-slate-700/60 text-gray-600 dark:text-slate-300 hover:bg-white dark:hover:bg-slate-700 text-xs font-medium transition-all" title="Copiar mensagem">

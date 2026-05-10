@@ -4,9 +4,9 @@ import {
   Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users,
   CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList,
   History, Play, X, ChevronLeft, ChevronRight, CheckCircle, Clock, Link as LinkIcon, Copy, MessageSquare, ExternalLink,
-  Clipboard, Rocket, Upload, AlertOctagon, Menu, Database, DollarSign, Bell
+  Clipboard, Rocket, Upload, AlertOctagon, Menu, Database, Bell
 } from 'lucide-react';
-import { ParsedClient, AppConfig, ViewMode, ResultViewMode, ToastMessage, DateRange, ActionLog, PaymentRecord, StoredClient, Reminder } from './types';
+import { ParsedClient, AppConfig, ViewMode, ResultViewMode, ToastMessage, DateRange, ActionLog, StoredClient, Reminder } from './types';
 import { DEFAULT_CONFIG } from './constants';
 import { parseClientData, detectInputType, normalizeCsvIfNeeded } from './utils/parser';
 import { extractPhone, extractPhoneValidated, generateCSV, formatDateShort, toInputDate, formatCurrency, padZero, formatDate } from './utils/helpers';
@@ -16,7 +16,6 @@ import ConfigModal from './components/ConfigModal';
 import EditClientModal from './components/EditClientModal';
 import ReceiptModal from './components/ReceiptModal';
 import LinkClientsModal from './components/LinkClientsModal';
-import PaymentModal from './components/PaymentModal';
 import ReminderModal from './components/ReminderModal';
 import DatabaseModal from './components/DatabaseModal';
 import { HistorySidebar, LinksSidebar } from './components/Sidebars';
@@ -171,18 +170,6 @@ function App() {
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [isLinksOpen, setIsLinksOpen] = useState(false);
 
-  // --- Feature: Pagamentos ---
-  const [payments, setPayments] = useState<PaymentRecord[]>(() => {
-    try {
-      const saved = localStorage.getItem('paymentsLog');
-      if (!saved) return [];
-      const parsed: PaymentRecord[] = JSON.parse(saved);
-      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
-      return parsed.filter(p => Date.now() - p.paidAt < thirtyDays);
-    } catch { return []; }
-  });
-  const [payingClient, setPayingClient] = useState<ParsedClient | null>(null);
-
   // --- Feature: Banco de Clientes ---
   const [clientDatabase, setClientDatabase] = useState<StoredClient[]>(() => {
     try {
@@ -283,10 +270,6 @@ function App() {
   useEffect(() => {
     localStorage.setItem('actionHistory', JSON.stringify(actionHistory));
   }, [actionHistory]);
-
-  useEffect(() => {
-    localStorage.setItem('paymentsLog', JSON.stringify(payments));
-  }, [payments]);
 
   useEffect(() => {
     localStorage.setItem('clientDatabase', JSON.stringify(clientDatabase));
@@ -601,26 +584,19 @@ function App() {
     }
 
     // AUTO-ADVANCE LOGIC (QUEUE MODE)
-    // Only auto-advance if it was a WhatsApp action and Queue Mode is active
     if (action === 'whatsapp') {
-        // We need to check the CURRENT view mode and index state
-        // Since this is a callback, we use functional updates or refs usually, 
-        // but here we can just update the index state with a timeout
         setTimeout(() => {
             setIsQueueMode(currentIsQueue => {
                 if (currentIsQueue) {
                      setFocusIndex(prevIndex => {
-                         // Advance if not at end
                          const total = getFilteredResults().length;
-                         if (prevIndex < total - 1) {
-                             return prevIndex + 1;
-                         }
+                         if (prevIndex < total - 1) return prevIndex + 1;
                          return prevIndex;
                      });
                 }
-                return currentIsQueue; // return existing value
+                return currentIsQueue;
             });
-        }, 1000); // 1s delay to let browser open tab
+        }, 1000);
     }
   }, [results]);
 
@@ -673,13 +649,6 @@ function App() {
     return { total: totalCards, expired, today: expiringToday, potentialRevenue };
   }, [results, searchQuery, config.plans]);
 
-  const todayRevenue = useMemo(() => {
-    const todayStr = new Date().toDateString();
-    return payments
-      .filter(p => new Date(p.paidAt).toDateString() === todayStr)
-      .reduce((sum, p) => sum + p.amount, 0);
-  }, [payments]);
-
   // --- Focus Mode Logic ---
   const startFocusMode = (enableQueue = false) => {
     const filtered = getFilteredResults();
@@ -716,7 +685,6 @@ function App() {
     if (focusIndex < filtered.length - 1) {
       setFocusIndex(prev => prev + 1);
     } else if (isQueueMode) {
-      // Fim da fila — exibe relatório se houver inválidos
       if (invalidClients.length > 0) setShowInvalidReport(true);
       setIsQueueMode(false);
       addToast('Fila concluída.', 'success');
@@ -725,19 +693,6 @@ function App() {
 
   const handleFocusPrev = () => {
     if (focusIndex > 0) setFocusIndex(prev => prev - 1);
-  };
-
-  // --- Handlers: Pagamentos ---
-  const handleMarkAsPaid = (client: ParsedClient, amount: number) => {
-    const record: PaymentRecord = {
-      id: crypto.randomUUID(),
-      clientId: client.id,
-      clientName: client.name,
-      amount,
-      paidAt: Date.now(),
-    };
-    setPayments(prev => [...prev, record]);
-    addToast(`💰 ${client.name} — R$ ${amount.toFixed(2)} registrado`, 'success');
   };
 
   // --- Handlers: Banco de Clientes ---
@@ -771,6 +726,17 @@ function App() {
       return clean ? clean + '\n' + lines : lines;
     });
     addToast('Clientes carregados no painel', 'success');
+  };
+
+  const handlePhoneEdit = (clientName: string, phone: string) => {
+    setPhoneOverrides(prev => ({ ...prev, [clientName]: phone }));
+    // Update rawNotes immediately in current results
+    const { cleanText } = extractPhone(results.find(r => r.name === clientName)?.rawNotes || '');
+    setResults(prev => prev.map(r =>
+      r.name === clientName
+        ? { ...r, rawNotes: phone ? `${phone} ${cleanText}`.trim() : r.rawNotes }
+        : r
+    ));
   };
 
   const handleRemoveFromDatabase = (id: string) => {
@@ -813,7 +779,6 @@ function App() {
   const stopFocusMode = () => {
       setResultViewMode('grid');
       setIsQueueMode(false);
-      // Ao sair, mostra o relatório de inválidos se houver
       if (invalidClients.length > 0) setShowInvalidReport(true);
   };
 
@@ -1052,18 +1017,13 @@ function App() {
                     <span className="text-xs text-gray-500 dark:text-slate-400">Vencidos</span>
                     <span className="text-xs font-bold text-red-600 dark:text-red-400">{dashboardStats.expired}</span>
                   </div>
-                  <div className="px-3 py-2 flex items-center gap-1.5 flex-shrink-0">
-                    <CheckCircle size={12} className="text-emerald-600 dark:text-emerald-400" />
-                    <span className="text-xs text-gray-500 dark:text-slate-400">Recebido</span>
-                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">{todayRevenue > 0 ? `R$ ${todayRevenue.toFixed(2)}` : '—'}</span>
-                  </div>
                 </div>
               </div>
 
               {/* Cards */}
               <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
                 {getFilteredResults().length > 0 ? getFilteredResults().map((client) => (
-                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} isPaid={payments.some(p => p.clientName.toLowerCase() === client.name.toLowerCase() && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientName.toLowerCase() === client.name.toLowerCase() && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
+                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === client.name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[client.name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} onPhoneEdit={handlePhoneEdit} />
                 )) : (
                   <div className="text-center py-16 text-gray-500 dark:text-slate-600 bg-white dark:bg-slate-800/30 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
                     <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
@@ -1097,7 +1057,7 @@ function App() {
           </div>
           <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
             <div className="w-full max-w-2xl h-full flex flex-col justify-center">
-              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} isPaid={payments.some(p => p.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && new Date(p.paidAt).toDateString() === new Date().toDateString())} hasReminder={reminders.some(r => r.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && !r.fired)} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onMarkAsPaid={setPayingClient} onAddReminder={setReminderClient} />
+              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[getFilteredResults()[focusIndex].name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} onPhoneEdit={handlePhoneEdit} />
             </div>
           </div>
           <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
@@ -1113,11 +1073,6 @@ function App() {
       <LinksSidebar isOpen={isLinksOpen} onClose={() => setIsLinksOpen(false)} links={config.quickLinks || []} onCopy={copyToClipboard} onManage={() => { setIsLinksOpen(false); setIsConfigOpen(true); }} />
 
       {/* ── NOVOS MODAIS ── */}
-      <PaymentModal
-        client={payingClient}
-        onClose={() => setPayingClient(null)}
-        onConfirm={handleMarkAsPaid}
-      />
       <ReminderModal
         client={reminderClient}
         defaultTime={config.defaultTime || '20:00'}
