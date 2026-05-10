@@ -382,14 +382,8 @@ function App() {
       return;
     }
 
-    // Suporta tanto YYYY-MM (mês) quanto YYYY-MM-DD (data completa)
-    const startStr = range.start.length === 7 ? range.start + '-01' : range.start;
-    const endStr = range.end.length === 7 ? (() => {
-      const [y, m] = range.end.split('-').map(Number);
-      return `${range.end}-${String(new Date(y, m, 0).getDate()).padStart(2, '0')}`;
-    })() : range.end;
-    const start = new Date(startStr + "T00:00:00");
-    const end = new Date(endStr + "T23:59:59");
+    const start = new Date(range.start + "T00:00:00");
+    const end = new Date(range.end + "T23:59:59");
 
     if (start > end) {
       addToast('Data de início maior que data fim.', 'error');
@@ -941,12 +935,12 @@ function App() {
               <div className="flex gap-1.5 items-end">
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
-                  <input type="month" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.start} onChange={(e) => setUnifiedDates({...unifiedDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
                 <span className="text-gray-400 dark:text-slate-600 pb-2.5 flex-shrink-0">→</span>
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
-                  <input type="month" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={unifiedDates.end} onChange={(e) => setUnifiedDates({...unifiedDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-emerald-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <div className="flex gap-2">
@@ -972,12 +966,12 @@ function App() {
               <div className="flex gap-1.5 items-end">
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Início</label>
-                  <input type="month" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={expiredDates.start} onChange={(e) => setExpiredDates({...expiredDates, start: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
                 <span className="text-gray-400 dark:text-slate-600 pb-2.5 flex-shrink-0">→</span>
                 <div className="flex-1">
                   <label className="block text-xs font-medium text-gray-500 dark:text-slate-500 mb-1.5">Fim</label>
-                  <input type="month" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
+                  <input type="date" value={expiredDates.end} onChange={(e) => setExpiredDates({...expiredDates, end: e.target.value})} className="w-full px-2 py-2.5 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-red-500 dark:[color-scheme:dark]" />
                 </div>
               </div>
               <button onClick={() => { processData(expiredDates, true); setIsSidebarOpen(false); }} className="w-full bg-red-600 hover:bg-red-500 text-white py-2.5 px-3 rounded-xl text-xs font-bold transition-all active:scale-[0.97] flex items-center justify-center gap-1.5 shadow-lg shadow-red-900/20">
