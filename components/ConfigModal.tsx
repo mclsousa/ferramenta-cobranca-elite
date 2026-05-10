@@ -244,21 +244,40 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
   };
 
   // --- Backup & Restore Logic ---
+  const BACKUP_KEYS = [
+    'cobrancaConfig',
+    'customNotes',
+    'customMessages',
+    'phoneOverrides',
+    'clientTags',
+    'clientLinks',
+    'clientDatabase',
+    'reminders',
+    'sentClientsHistory',
+    'actionHistory',
+    'lastInputData',
+    'themeElite',
+    'unifiedStart',
+    'unifiedEnd',
+  ] as const;
+
   const handleBackup = () => {
-    const backupData = {
-        config: localConfig,
-        customNotes: localStorage.getItem('customNotes') || '{}',
-        clientTags: localStorage.getItem('clientTags') || '{}',
-        timestamp: new Date().toISOString()
-    };
+    const backupData: Record<string, string | null> = { _version: '2', timestamp: new Date().toISOString() };
+    for (const key of BACKUP_KEYS) {
+      backupData[key] = localStorage.getItem(key);
+    }
+    // Always use latest config (unsaved changes included)
+    backupData['cobrancaConfig'] = JSON.stringify(localConfig);
+
     const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `backup_cobranca_facil_${new Date().toISOString().split('T')[0]}.json`;
+    link.download = `backup_elite_${new Date().toISOString().split('T')[0]}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   const handleRestore = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,18 +288,31 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
     reader.onload = (event) => {
         try {
             const data = JSON.parse(event.target?.result as string);
-            if (data.config && data.customNotes) {
-                setLocalConfig(data.config);
-                localStorage.setItem('customNotes', data.customNotes);
-                if (data.clientTags) {
-                    localStorage.setItem('clientTags', data.clientTags);
-                }
-                alert('Backup restaurado com sucesso! Salve as configurações para aplicar.');
-            } else {
+            if (!data.cobrancaConfig && !data.config) {
                 alert('Arquivo de backup inválido.');
+                return;
             }
+
+            // Suporte ao formato antigo (v1) e novo (v2)
+            const isV1 = !data._version;
+            if (isV1) {
+                // Formato antigo só tinha config, customNotes, clientTags
+                if (data.config) localStorage.setItem('cobrancaConfig', JSON.stringify(data.config));
+                if (data.customNotes) localStorage.setItem('customNotes', data.customNotes);
+                if (data.clientTags) localStorage.setItem('clientTags', data.clientTags);
+            } else {
+                // Formato completo v2
+                for (const key of BACKUP_KEYS) {
+                    if (data[key] != null) {
+                        localStorage.setItem(key, data[key] as string);
+                    }
+                }
+            }
+
+            alert('Backup restaurado! A página será recarregada para aplicar tudo.');
+            window.location.reload();
         } catch (err) {
-            alert('Erro ao ler arquivo de backup.');
+            alert('Erro ao ler arquivo de backup. Verifique se o arquivo é válido.');
         }
     };
     reader.readAsText(file);
