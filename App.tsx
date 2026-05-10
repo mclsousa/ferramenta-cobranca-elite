@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
-  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users, Zap,
+  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users,
   CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList,
   History, Play, X, ChevronLeft, ChevronRight, CheckCircle, Clock, Link as LinkIcon, Copy, MessageSquare, ExternalLink,
   Clipboard, Rocket, Upload, AlertOctagon, Menu, Database, Bell
@@ -19,6 +19,12 @@ import LinkClientsModal from './components/LinkClientsModal';
 import ReminderModal from './components/ReminderModal';
 import DatabaseModal from './components/DatabaseModal';
 import { HistorySidebar, LinksSidebar } from './components/Sidebars';
+
+const TvBrIcon = ({ size = 32 }: { size?: number }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="#10b981">
+    <path d="M3,20l0,5.997c-0,0.796 0.316,1.559 0.879,2.121c0.562,0.563 1.325,0.879 2.121,0.879l0.003,-0l0,-1.997l-1.003,-0c-0.552,0 -1,-0.448 -1,-1c-0,-0.552 0.448,-1 1,-1c0,-0 3,-0 3,-0c0.552,-0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1c-0,-0 -2,0 -2,0c-1.656,0 -3,-1.344 -3,-3Zm0,-0c0,-1.656 1.344,-3 3,-3l0.003,0l0,-1c0,-0.552 0.449,-1 1,-1c0.552,-0 1,0.448 1,1l0,1l0.997,0c0.552,0 1,0.448 1,1c-0,0.552 -0.448,1 -1,1l-3,0c-0.552,0 -1,0.448 -1,1c0,0.552 0.448,1 1,1c0,0 2,-0 2,-0c1.656,-0 3,1.344 3,3c0,1.655 -1.342,2.998 -2.997,3l0,1.997l17.987,-0c1.657,-0 3,-1.343 3,-3l0,-15.059l-25.99,0.053l0,9.009Zm20.99,2.5c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm8,-4.75c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm8,-4.75c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4,0c-0.69,0 -1.25,0.56 -1.25,1.25c0,0.69 0.56,1.25 1.25,1.25c0.69,0 1.25,-0.56 1.25,-1.25c0,-0.69 -0.56,-1.25 -1.25,-1.25Zm-4.971,-9.993l-1.019,-0c-1.657,-0 -3,1.343 -3,3l0,2.984l25.99,-0.053l0,-2.931c0,-1.657 -1.343,-3 -3,-3l-1,-0l0,2.993c0,0.552 -0.448,1 -1,1c-0.552,-0 -1,-0.448 -1,-1l0,-2.993l-2,-0l0,2.993c0,0.552 -0.448,1 -1,1c-0.552,-0 -1,-0.448 -1,-1l0,-2.993l-1.99,-0l-0,2.993c0,0.552 -0.448,1 -1,1c-0.552,0 -1,-0.448 -1,-1l-0,-2.993l-1.99,-0l-0,2.99c-0,0.552 -0.448,1 -1,1c-0.552,-0 -1,-0.448 -1,-1l-0,-2.99l-1.991,-0l0,2.99c0,0.552 -0.448,1 -1,1c-0.552,-0 -1,-0.448 -1,-1l0,-2.99Z" />
+  </svg>
+);
 
 function App() {
   // --- Theme State ---
@@ -292,7 +298,7 @@ function App() {
         setTimeout(() => {
           addToast(`⏰ Lembrete: ${r.clientName}`, 'warning');
           if (Notification.permission === 'granted') {
-            new Notification('Dig Cob', { body: `Hora de cobrar: ${r.clientName}`, icon: '/favicon.ico' });
+            new Notification('TVBR.Cob', { body: `Hora de cobrar: ${r.clientName}`, icon: '/favicon.ico' });
           }
           setReminders(prev => prev.map(x => x.id === r.id ? { ...x, fired: true } : x));
         }, delay);
@@ -766,7 +772,7 @@ function App() {
       setTimeout(() => {
         addToast(`⏰ Lembrete: ${client.name}`, 'warning');
         if (Notification.permission === 'granted') {
-          new Notification('Dig Cob', { body: `Hora de cobrar: ${client.name}`, icon: '/favicon.ico' });
+          new Notification('TVBR.Cob', { body: `Hora de cobrar: ${client.name}`, icon: '/favicon.ico' });
         }
         setReminders(prev => prev.map(r => r.id === reminder.id ? { ...r, fired: true } : r));
       }, delay);
@@ -796,11 +802,11 @@ function App() {
           >
             <Menu size={20} />
           </button>
-          <div className="p-1.5 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-900 rounded-lg shadow-lg shadow-black/20 text-emerald-400">
-            <Zap size={16} fill="currentColor" />
+          <div className="flex-shrink-0">
+            <TvBrIcon size={32} />
           </div>
           <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-            Dig <span className="text-emerald-600 dark:text-emerald-400">Cob</span>
+            TVBR<span className="text-emerald-600 dark:text-emerald-400">.Cob</span>
           </h1>
         </div>
 
@@ -854,11 +860,9 @@ function App() {
           {/* Cabeçalho da sidebar (mobile: mostra fechar) */}
           <div className="flex-shrink-0 md:hidden flex items-center justify-between px-5 pt-5 pb-3">
             <div className="flex items-center gap-2">
-              <div className="p-1.5 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow text-emerald-400">
-                <Zap size={14} fill="currentColor" />
-              </div>
+              <TvBrIcon size={28} />
               <span className="text-base font-bold text-gray-900 dark:text-white tracking-tight">
-                Dig <span className="text-emerald-600 dark:text-emerald-400">Cob</span>
+                TVBR<span className="text-emerald-600 dark:text-emerald-400">.Cob</span>
               </span>
             </div>
             <button
