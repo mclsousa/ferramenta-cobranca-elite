@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
-  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users,
+  Sun, Moon, Filter, Trash2, Search, ArrowLeft, Download, Settings, Users, Zap,
   CalendarX, AlertTriangle, Info, CalendarCheck, LayoutGrid, LayoutList,
   History, Play, X, ChevronLeft, ChevronRight, CheckCircle, Clock, Link as LinkIcon, Copy, MessageSquare, ExternalLink,
   Clipboard, Rocket, Upload, AlertOctagon, Menu, Database, Bell
@@ -292,7 +292,7 @@ function App() {
         setTimeout(() => {
           addToast(`⏰ Lembrete: ${r.clientName}`, 'warning');
           if (Notification.permission === 'granted') {
-            new Notification('Cobrança Elite', { body: `Hora de cobrar: ${r.clientName}`, icon: '/favicon.ico' });
+            new Notification('Dig Cob', { body: `Hora de cobrar: ${r.clientName}`, icon: '/favicon.ico' });
           }
           setReminders(prev => prev.map(x => x.id === r.id ? { ...x, fired: true } : x));
         }, delay);
@@ -766,7 +766,7 @@ function App() {
       setTimeout(() => {
         addToast(`⏰ Lembrete: ${client.name}`, 'warning');
         if (Notification.permission === 'granted') {
-          new Notification('Cobrança Elite', { body: `Hora de cobrar: ${client.name}`, icon: '/favicon.ico' });
+          new Notification('Dig Cob', { body: `Hora de cobrar: ${client.name}`, icon: '/favicon.ico' });
         }
         setReminders(prev => prev.map(r => r.id === reminder.id ? { ...r, fired: true } : r));
       }, delay);
@@ -796,11 +796,11 @@ function App() {
           >
             <Menu size={20} />
           </button>
-          <div className="p-1.5 bg-gradient-to-br from-emerald-400 to-teal-600 rounded-lg shadow-lg shadow-emerald-500/20 text-white">
-            <Users size={16} />
+          <div className="p-1.5 bg-gradient-to-br from-slate-800 to-slate-900 dark:from-slate-700 dark:to-slate-900 rounded-lg shadow-lg shadow-black/20 text-emerald-400">
+            <Zap size={16} fill="currentColor" />
           </div>
           <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white tracking-tight">
-            Cobrança <span className="text-emerald-600 dark:text-emerald-400">Elite</span>
+            Dig <span className="text-emerald-600 dark:text-emerald-400">Cob</span>
           </h1>
         </div>
 
@@ -853,7 +853,14 @@ function App() {
         `}>
           {/* Cabeçalho da sidebar (mobile: mostra fechar) */}
           <div className="flex-shrink-0 md:hidden flex items-center justify-between px-5 pt-5 pb-3">
-            <span className="text-sm font-bold text-gray-500 dark:text-slate-400 uppercase tracking-widest">Painel</span>
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow text-emerald-400">
+                <Zap size={14} fill="currentColor" />
+              </div>
+              <span className="text-base font-bold text-gray-900 dark:text-white tracking-tight">
+                Dig <span className="text-emerald-600 dark:text-emerald-400">Cob</span>
+              </span>
+            </div>
             <button
               onClick={() => setIsSidebarOpen(false)}
               className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400 dark:text-slate-500 hover:text-gray-700 dark:hover:text-slate-200 transition-colors"
