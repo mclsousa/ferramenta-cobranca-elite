@@ -907,19 +907,8 @@ function App() {
             )}
 
             {/* Entrada de Dados */}
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Dados</span>
-                <div className="flex gap-1.5">
-                  <input type="file" accept=".csv,.txt,.tsv" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
-                  <button onClick={() => fileInputRef.current?.click()} className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
-                    <Upload size={13} /> Arquivo
-                  </button>
-                  <button onClick={handlePasteInput} className="text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5">
-                    <Clipboard size={13} /> Colar
-                  </button>
-                </div>
-              </div>
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Dados</span>
               <textarea
                 ref={textareaRef}
                 value={inputData}
@@ -927,6 +916,15 @@ function App() {
                 placeholder="Cole aqui a lista (IPTV ou P2P)..."
                 className="w-full h-36 p-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-gray-800 dark:text-slate-200 focus:ring-2 focus:ring-emerald-500 outline-none resize-none font-mono text-xs placeholder-gray-400 dark:placeholder-slate-600 transition-all leading-relaxed"
               />
+              <div className="flex gap-2">
+                <input type="file" accept=".csv,.txt,.tsv" ref={fileInputRef} onChange={handleFileUpload} className="hidden" />
+                <button onClick={() => fileInputRef.current?.click()} className="flex-1 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                  <Upload size={13} /> Arquivo
+                </button>
+                <button onClick={handlePasteInput} className="flex-1 text-xs bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-500 dark:text-slate-400 px-3 py-2.5 rounded-xl transition-colors flex items-center justify-center gap-1.5">
+                  <Clipboard size={13} /> Colar
+                </button>
+              </div>
             </div>
 
             {/* Filtro principal */}

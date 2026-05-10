@@ -432,10 +432,11 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 )}
             </div>
 
-            {/* Actions */}
+            {/* Actions — mobile: apenas ações primárias; desktop: todas */}
             <div className="flex items-center gap-0.5 flex-shrink-0">
+                {/* Secundários — só no desktop */}
                 {(config.templates.additional || []).length > 0 && (
-                    <div className="relative" title="Alterar Modelo">
+                    <div className="relative hidden sm:block" title="Alterar Modelo">
                         <select
                             value={selectedTemplateId}
                             onChange={(e) => setSelectedTemplateId(e.target.value)}
@@ -451,15 +452,17 @@ const ClientCard: React.FC<ClientCardProps> = ({
                         </div>
                     </div>
                 )}
-                <button onClick={() => onLinkClient(client)} className="p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors" title="Vincular">
+                <button onClick={() => onLinkClient(client)} className="hidden sm:flex p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-blue-500 dark:hover:text-blue-400 transition-colors" title="Vincular">
                     <LinkIcon size={15} />
                 </button>
-                <button onClick={() => onOpenReceipt(client)} disabled={!whatsapp} className={`p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-300 dark:text-slate-600 hover:text-orange-500 dark:hover:text-orange-400'}`} title="Recibo">
+                <button onClick={() => onOpenReceipt(client)} disabled={!whatsapp} className={`hidden sm:flex p-1.5 rounded transition-colors ${!whatsapp ? 'text-gray-200 dark:text-slate-700 cursor-not-allowed' : 'text-gray-300 dark:text-slate-600 hover:text-orange-500 dark:hover:text-orange-400'}`} title="Recibo">
                     <FileText size={15} />
                 </button>
-                <button onClick={(e) => { e.stopPropagation(); onEdit(client); }} className="p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-primary dark:hover:text-emerald-400 transition-colors" title="Editar">
+                <button onClick={(e) => { e.stopPropagation(); onEdit(client); }} className="hidden sm:flex p-1.5 rounded text-gray-300 dark:text-slate-600 hover:text-primary dark:hover:text-emerald-400 transition-colors" title="Editar">
                     <Edit size={15} />
                 </button>
+
+                {/* Primários — sempre visíveis */}
                 {onAddReminder && (
                   <button onClick={() => onAddReminder(client)} className={`p-1.5 rounded transition-colors ${hasReminder ? 'text-violet-500 dark:text-violet-400' : 'text-gray-300 dark:text-slate-600 hover:text-violet-500 dark:hover:text-violet-400'}`} title="Lembrete">
                     <Bell size={15} />
