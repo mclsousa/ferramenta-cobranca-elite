@@ -169,27 +169,15 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
                 </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data Vencimento</label>
-                <input 
-                  type="date" 
-                  required
-                  value={formData.dueDate}
-                  onChange={e => setFormData({...formData, dueDate: e.target.value})}
-                  className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Telefone</label>
-                <input 
-                  type="text" 
-                  placeholder="+55..."
-                  value={formData.phone}
-                  onChange={e => setFormData({...formData, phone: e.target.value})}
-                  className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Data Vencimento</label>
+              <input
+                type="date"
+                required
+                value={formData.dueDate}
+                onChange={e => setFormData({...formData, dueDate: e.target.value})}
+                className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none [color-scheme:light] dark:[color-scheme:dark]"
+              />
             </div>
 
             <div>
@@ -204,12 +192,23 @@ const EditClientModal: React.FC<EditClientModalProps> = ({ isOpen, onClose, clie
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Observação Adicional (Privada)</label>
-              <textarea 
+              <textarea
                 rows={2}
                 value={formData.customNotes}
                 onChange={e => setFormData({...formData, customNotes: e.target.value})}
                 className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none text-sm"
               ></textarea>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Telefone / WhatsApp</label>
+              <input
+                type="text"
+                placeholder="+55..."
+                value={formData.phone}
+                onChange={e => setFormData({...formData, phone: e.target.value})}
+                className="w-full p-2.5 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-primary focus:outline-none"
+              />
             </div>
 
             {/* Custom Message Section */}

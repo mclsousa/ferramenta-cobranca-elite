@@ -1034,7 +1034,7 @@ function App() {
               {/* Cards */}
               <div className={resultViewMode === 'grid' ? "grid grid-cols-1 gap-3" : "flex flex-col gap-2"}>
                 {getFilteredResults().length > 0 ? getFilteredResults().map((client) => (
-                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === client.name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[client.name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} onPhoneEdit={handlePhoneEdit} />
+                  <ClientCard key={client.id} client={client} config={config} isExpiredMode={isExpiredMode} viewMode={resultViewMode} searchQuery={searchQuery} isSent={!!sentClients[client.id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === client.name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[client.name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} />
                 )) : (
                   <div className="text-center py-16 text-gray-500 dark:text-slate-600 bg-white dark:bg-slate-800/30 rounded-xl border border-dashed border-gray-300 dark:border-slate-700">
                     <p className="text-sm font-medium">Nenhum resultado encontrado.</p>
@@ -1068,7 +1068,7 @@ function App() {
           </div>
           <div className="flex-1 flex items-center justify-center p-4 sm:p-10 overflow-hidden">
             <div className="w-full max-w-2xl h-full flex flex-col justify-center">
-              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[getFilteredResults()[focusIndex].name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} onPhoneEdit={handlePhoneEdit} />
+              <ClientCard client={getFilteredResults()[focusIndex]} config={config} isExpiredMode={isExpiredMode} viewMode="focus" searchQuery={searchQuery} isSent={!!sentClients[getFilteredResults()[focusIndex].id]} hasReminder={reminders.some(r => r.clientName.toLowerCase() === getFilteredResults()[focusIndex].name.toLowerCase() && !r.fired)} phoneOverride={phoneOverrides[getFilteredResults()[focusIndex].name] || ''} onEdit={setEditingClient} onCopy={copyToClipboard} onMarkAsSent={handleMarkAsSent} onOpenReceipt={setReceiptClient} onLinkClient={setLinkingClient} onAddReminder={setReminderClient} />
             </div>
           </div>
           <div className="h-20 bg-white dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 flex items-center justify-center gap-6">
