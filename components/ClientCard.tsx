@@ -313,7 +313,8 @@ const ClientCard: React.FC<ClientCardProps> = ({
       {/* COLLAPSED STATE — clique em qualquer área do card para expandir */}
       {isCollapsed && !isFocusMode ? (
         <div
-          className="flex-1 flex items-center gap-3 px-3 py-2.5 min-h-[66px] cursor-pointer select-none"
+          className="flex-1 flex items-center gap-3 px-3 py-2.5 min-h-[66px] cursor-pointer select-none transition-colors"
+          style={{ backgroundColor: `${barColor}14` }}
           onClick={() => setIsCollapsed(false)}
         >
             {/* Sinal de status */}
