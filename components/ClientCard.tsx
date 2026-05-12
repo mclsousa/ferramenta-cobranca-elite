@@ -364,11 +364,6 @@ const ClientCard: React.FC<ClientCardProps> = ({
                     </div>
                 )}
 
-                {cleanText && (
-                    <div className="text-[10px] text-gray-400 dark:text-slate-500 truncate mt-0.5">
-                        <strong className="text-red-400 dark:text-red-400">Obs:</strong> <HighlightedText text={cleanText} query={searchQuery} />
-                    </div>
-                )}
             </div>
 
             {/* Ações — stopPropagation para não acionar o expand do card */}
