@@ -850,7 +850,7 @@ const ConfigModal: React.FC<ConfigModalProps> = ({ isOpen, onClose, config, onSa
                 className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-600 text-white px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors"
             >
                 <Save size={18} />
-                Salvar Configurações
+                Salvar
             </button>
         </div>
       </div>
