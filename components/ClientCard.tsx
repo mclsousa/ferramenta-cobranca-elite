@@ -356,14 +356,6 @@ const ClientCard: React.FC<ClientCardProps> = ({
                     </div>
                 )}
 
-                {client.customNotes && (
-                    <div className="mt-1">
-                        <span className="inline px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/40 text-[10px] text-amber-800 dark:text-amber-300 font-medium leading-snug box-decoration-clone">
-                            <HighlightedText text={client.customNotes} query={searchQuery} />
-                        </span>
-                    </div>
-                )}
-
                 {cleanText && (
                     <div className="text-[10px] text-gray-400 dark:text-slate-500 truncate mt-0.5">
                         <strong className="text-red-400 dark:text-red-400">Obs:</strong> <HighlightedText text={cleanText} query={searchQuery} />
