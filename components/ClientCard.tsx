@@ -2,7 +2,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { ParsedClient, AppConfig, ResultViewMode } from '../types';
 import { extractPhone, padZero, formatDate, processSpinSyntax, applyAntiBan, extractCredentials } from '../utils/helpers';
-import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, Bell, Cast } from 'lucide-react';
+import { Copy, Phone, Edit, MessageSquare, User, CheckCircle, ChevronDown, ChevronUp, PenTool, List, FileText, Link as LinkIcon, Lock, Key, Zap, Bell } from 'lucide-react';
 
 interface ClientCardProps {
   client: ParsedClient;
@@ -116,10 +116,10 @@ const ClientCard: React.FC<ClientCardProps> = ({
       activeBars = 1; barColor = '#E24B4A';
     } else if (vencDateOnly.getTime() === hoje.getTime()) {
       prefixStr = 'vence hoje';
-      activeBars = 1; barColor = '#E24B4A';
+      activeBars = 5; barColor = '#F97316';
     } else if (vencDateOnly.getTime() === amanha.getTime()) {
       prefixStr = 'vence amanhã';
-      activeBars = 2; barColor = '#EF9F27';
+      activeBars = 2; barColor = '#EAB308';
     } else if (vencDateOnly.getTime() === depoisDeAmanha.getTime()) {
       prefixStr = 'vence em';
       activeBars = 3; barColor = '#378ADD';
@@ -319,9 +319,12 @@ const ClientCard: React.FC<ClientCardProps> = ({
         >
             {/* Sinal de status */}
             <div className="flex-shrink-0 flex flex-col items-center justify-center w-8 gap-0.5">
-                <Cast size={20} style={{ color: barColor }} />
+                <i
+                  className={`ti ${activeBars === 1 ? 'ti-clock-x' : activeBars === 5 ? 'ti-alert-circle' : activeBars === 2 ? 'ti-alarm' : activeBars === 3 ? 'ti-calendar-event' : 'ti-circle-check'}`}
+                  style={{ color: barColor, fontSize: '20px', lineHeight: 1 }}
+                />
                 <span className="text-[8px] font-bold leading-none" style={{ color: barColor }}>
-                  {activeBars === 1 ? 'vencido' : activeBars === 2 ? 'amanhã' : activeBars === 3 ? '2 dias' : 'ativo'}
+                  {activeBars === 1 ? 'vencido' : activeBars === 5 ? 'hoje' : activeBars === 2 ? 'amanhã' : activeBars === 3 ? '2 dias' : 'ativo'}
                 </span>
             </div>
 
@@ -418,7 +421,10 @@ const ClientCard: React.FC<ClientCardProps> = ({
                 onClick={() => setIsCollapsed(true)}
               >
                 <div className="flex items-center gap-2 min-w-0">
-                  <Cast size={16} style={{ color: barColor }} />
+                  <i
+                    className={`ti ${activeBars === 1 ? 'ti-clock-x' : activeBars === 5 ? 'ti-alert-circle' : activeBars === 2 ? 'ti-alarm' : activeBars === 3 ? 'ti-calendar-event' : 'ti-circle-check'}`}
+                    style={{ color: barColor, fontSize: '16px', lineHeight: 1 }}
+                  />
                   <span className="text-[10px] text-gray-400 dark:text-slate-500">{statusText.split('(')[0].trim()}</span>
                 </div>
                 <ChevronUp size={14} className="text-gray-400 dark:text-slate-500 flex-shrink-0" />
